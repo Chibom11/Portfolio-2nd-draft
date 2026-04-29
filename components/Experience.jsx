@@ -127,7 +127,7 @@ function Experience() {
    
       />
 
-      <Physics debug>
+      <Physics  gravity={[0,-50,0]}>
         <Selection>
     
 

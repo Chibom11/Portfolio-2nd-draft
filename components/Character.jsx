@@ -21,7 +21,6 @@ const Character = forwardRef((props, rbRef) => {
   const currentAnim = useRef('stand idle')
   const isFlipping = useRef(false)
 
-  // ✅ Store playAnim in a ref so the keydown closure always gets the latest version
   const playAnimRef = useRef(null)
   
   const playAnim = useCallback((name) => {
@@ -47,7 +46,7 @@ const Character = forwardRef((props, rbRef) => {
 
     const vel = rb.current.linvel()
     const speed = 20
-    const { forward, backward, left, right, jog } = get()
+    const { forward, backward, left, right, jog,flip } = get()
   if (isFlipping.current) return
   
     let x = 0, z = 0
@@ -57,6 +56,7 @@ const Character = forwardRef((props, rbRef) => {
     if (backward) { z = -speed;     targetAngle = Math.PI }
     if (left)     { x = speed;      targetAngle = Math.PI / 2 }
     if (right)    { x = -speed;     targetAngle = -Math.PI / 2 }
+   
 
     if (forward  && jog) { z =  speed + 8; targetAngle = 0 }
     if (backward && jog) { z = -speed - 8; targetAngle = Math.PI }
@@ -89,11 +89,11 @@ const Character = forwardRef((props, rbRef) => {
   useEffect(() => {
     const handleKeyDown = (event) => {
   
-      if (event.key === 'b' && !isFlipping.current) {
+      if (event.key === ' ' && !isFlipping.current) {
         isFlipping.current = true
         
-        rb.current?.applyImpulse({ x: 0, y: 40, z: 8 }, true)
         playAnimRef.current('jump')
+        rb.current?.applyImpulse({ x: 0, y: 8500, z: 0 }, true)
 
         const duration = (actions['jump']?._clip.duration ?? 1) * 1000
         console.log("Duration",duration)

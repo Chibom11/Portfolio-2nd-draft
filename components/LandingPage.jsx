@@ -10,7 +10,7 @@ function LandingPage() {
     { name: "backward", keys: ["KeyS"] },
     { name: "left",     keys: ["KeyD"] },
     { name: "right",    keys: ["KeyA"] },
-    { name: "flip",     keys: ["KeyB"] },
+    { name: "flip",     keys: ["Space"] },
     { name: "jog",      keys: ["Shift"] },
   ]
 
