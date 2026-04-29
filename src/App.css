@@ -1,0 +1,17 @@
+/* Reset everything */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* VERY IMPORTANT */
+html, body, #root {
+  width: 100%;
+  height: 100%;
+}
+
+/* Optional */
+body {
+  overflow: hidden;
+}
