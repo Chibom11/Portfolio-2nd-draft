@@ -25,58 +25,14 @@ import { degToRad } from 'three/src/math/MathUtils.js'
 import { Html } from '@react-three/drei'  
 import {Spiderman} from './Spiderman.jsx'
 
-function CameraHUD({ controlsRef }) {
-  const [info, setInfo] = useState({ x: 0, y: 0, z: 0, az: 0, po: 0 })
 
-  useEffect(() => {
-    const id = setInterval(() => {
-      if (!controlsRef.current) return
-      const pos = new THREE.Vector3()
-      controlsRef.current.getPosition(pos)
-      setInfo({
-        x:  pos.x.toFixed(2),
-        y:  pos.y.toFixed(2),
-        z:  pos.z.toFixed(2),
-        az: THREE.MathUtils.radToDeg(controlsRef.current.azimuthAngle).toFixed(1),
-        po: THREE.MathUtils.radToDeg(controlsRef.current.polarAngle).toFixed(1),
-      })
-    }, 200)
-    return () => clearInterval(id)
-  }, [controlsRef])
-
-  return (
-    <Html
-      style={{
-        position: 'absolute',
-        top: 12,
-        left: 12,
-        background: 'rgba(0,0,0,0.55)',
-        color: '#fff',
-        padding: '8px 12px',
-        borderRadius: 8,
-        fontSize: 12,
-        fontFamily: 'monospace',
-        lineHeight: 1.8,
-        pointerEvents: 'none',
-        whiteSpace: 'nowrap',
-      }}
-      fullscreen
-    >
-      <div>pos  x:{info.x}  y:{info.y}  z:{info.z}</div>
-      <div>azimuth: {info.az}°  |  polar: {info.po}°</div>
-      <div style={{ color: '#aaa', fontSize: 11, marginTop: 4 }}>
-        drag to explore — copy values to setLookAt()
-      </div>
-    </Html>
-  )
-}
 
 import { useFrame } from '@react-three/fiber'
 
 
 function Experience() {
   const controls = useRef()
-  const characterRb = useRef()        // ← this will hold the RigidBody
+  const characterRb = useRef()        
   const [isNight, setIsNight] = useState(false)
 
  
@@ -91,7 +47,7 @@ function Experience() {
     // Offset the camera behind/above the character
     // target = character position (+ slight height offset)
     controls.current.setLookAt(
-      pos.x+20,        pos.y + 90,  pos.z + 160,   // camera position
+      pos.x-30,        pos.y + 50,  pos.z + 160,   // camera position
       pos.x,        pos.y + 5,  pos.z,          // look-at target (character)
       true                                          // smooth
     )
@@ -106,10 +62,10 @@ function Experience() {
       <OrbitControls/>
       <color attach="background" args={['#1a0a2e']} />
       {/* <fogExp2 attach="fog" color="#7b4f8a" density={0.04} /> */}
-      <ambientLight color="#ff88cc" intensity={1.5} />
+      <ambientLight color="purple" intensity={2.3} />
       <directionalLight
         castShadow
-        color='purple'
+        color='blue'
         intensity={14}
         position={[1.3, 2, 1]}
       />
@@ -127,7 +83,7 @@ function Experience() {
    
       />
 
-      <Physics  gravity={[0,-50,0]}>
+      <Physics gravity={[0,-80,0]}>
         <Selection>
     
 
@@ -140,8 +96,8 @@ function Experience() {
           />
 
           {/* Pass the ref down */}
-          <Character ref={characterRb} />
-          <Spiderman scale={10}/>
+          {/* <Character ref={characterRb} /> */}
+          <Spiderman  ref={characterRb}/>
 
           {/* <Grass position={[-0.2, -0.1567, 0.3]} radius={0.07} count={120} isNight={isNight} />
           <Grass position={[0.10, -0.17, -0.08]} radius={0.04} count={100} isNight={isNight} />
