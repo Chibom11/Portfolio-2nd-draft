@@ -130,9 +130,27 @@ useEffect(() => {
       return (
 
     <group {...props} dispose={null}>
-     
-      <RigidBody type='fixed' colliders='cuboid'>
+             <rectAreaLight
+          ref={rectRef}
+          position={[-184.632, 198.49, 75.712]}
+          rotation={[-Math.PI / 2, 0, 0]}   
+          width={180}                         
+          height={50}                       
+          intensity={20}
+          color="#FF007A"
+        />  
       <mesh geometry={nodes.configurator003.geometry}  position={[-184.632, 151.49, 75.712]} rotation={[0, 0.873, 0]} scale={4.676} ><meshBasicMaterial map={config}/></mesh>
+          
+          <rectAreaLight
+        
+          position={[-54.65, 270.746, -140.6]} 
+          rotation={[-Math.PI / 2, 0, 0]}   
+          width={300}                         
+          height={100}                       
+          intensity={10}
+          color="blue"
+        />     
+      <RigidBody type='fixed' colliders='cuboid'>
       <mesh geometry={nodes.base.geometry} position={[-58.65, 150.746, 9.6]} scale={356.061} ><meshBasicMaterial map={base}/></mesh>
       </RigidBody>
       
@@ -157,7 +175,7 @@ useEffect(() => {
       <mesh geometry={nodes.road.geometry}  position={[57.692, 152.369, 69.15]} rotation={[Math.PI, -1.516, Math.PI]} scale={[-22.882, -103.602, -23.889]}><meshBasicMaterial map={road}/></mesh>
       </RigidBody>
               <rectAreaLight
-          ref={rectRef}
+         
           position={[-222.044, 240, 320.742]}
           rotation={[-Math.PI / 2, 0, 0]}   
           width={300}                         

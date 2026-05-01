@@ -77,7 +77,7 @@ console.log(actions)
     })
 
   useEffect(() => {
-    const handleKeyDown = (event) => {
+    const handleKeySpaceDown = (event) => {
   
       if (event.key === ' ' && !isFlipping.current) {
         isFlipping.current = true
@@ -96,9 +96,34 @@ console.log(actions)
       }
     }
 
-    document.addEventListener('keydown', handleKeyDown)
+    document.addEventListener('keydown', handleKeySpaceDown)
 
-    return () => document.removeEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeySpaceDown)
+  }, [actions])
+
+    useEffect(() => {
+    const handleKeyBDown = (event) => {
+  
+      if (event.key === 'b' && !isFlipping.current) {
+        isFlipping.current = true
+        
+        playAnim('backflip')
+        setTimeout(() => {
+        rbRef.current?.applyImpulse({ x: 0, y: 0, z: 0 }, true)
+      }, 250)
+
+        const duration = (actions['backflip']?._clip.duration ?? 1) * 1000
+
+        console.log("Duration",duration)
+        setTimeout(() => {
+          isFlipping.current = false
+        }, duration)
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyBDown)
+
+    return () => document.removeEventListener('keydown', handleKeyBDown)
   }, [actions])
   
   return (

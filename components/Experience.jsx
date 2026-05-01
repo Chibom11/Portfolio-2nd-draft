@@ -78,7 +78,7 @@ function Experience() {
         maxPolarAngle={degToRad(80)}
         minDistance={0.5}
         maxDistance={20}
-        smoothTime={0.25}           // ← keep this low for tight follow
+        smoothTime={0.25}           // keep this low for tight follow
         draggingSmoothTime={0.1}
    
       />
@@ -96,8 +96,8 @@ function Experience() {
           />
 
           {/* Pass the ref down */}
-          {/* <Character ref={characterRb} /> */}
-          <Spiderman  ref={characterRb}/>
+          <Character ref={characterRb} />
+          {/* <Spiderman  ref={characterRb}/> */}
 
           {/* <Grass position={[-0.2, -0.1567, 0.3]} radius={0.07} count={120} isNight={isNight} />
           <Grass position={[0.10, -0.17, -0.08]} radius={0.04} count={100} isNight={isNight} />

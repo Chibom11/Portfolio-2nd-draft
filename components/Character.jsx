@@ -93,7 +93,9 @@ const Character = forwardRef((props, rbRef) => {
         isFlipping.current = true
         
         playAnimRef.current('jump')
-        rb.current?.applyImpulse({ x: 0, y: 8500, z: 0 }, true)
+         setTimeout(() => {
+        rbRef.current?.applyImpulse({ x: 0, y: 14000, z: 0 }, true)
+      }, 250)
 
         const duration = (actions['jump']?._clip.duration ?? 1) * 1000
         console.log("Duration",duration)
