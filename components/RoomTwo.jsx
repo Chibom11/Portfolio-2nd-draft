@@ -10,6 +10,7 @@ import * as THREE from 'three'
 import { RectAreaLightHelper } from 'three/examples/jsm/helpers/RectAreaLightHelper'
 import { RectAreaLightUniformsLib } from 'three/examples/jsm/lights/RectAreaLightUniformsLib'
 import { CuboidCollider, RigidBody } from '@react-three/rapier'
+import Leaves from './Leaves'
 RectAreaLightUniformsLib.init()
 
 export default function Model(props) {
@@ -203,16 +204,21 @@ useEffect(() => {
       <mesh geometry={nodes.github.geometry}  scale={128.79} ><meshBasicMaterial map={github}/></mesh>
      <CuboidCollider args={[10,10,60]} position={[0,0,10]}/>
       </RigidBody>
+      <Leaves position={[104.512, 200.988, -79.712]}  scale={800} />
       <mesh geometry={nodes.socialtrees.geometry}  position={[243.107, 184.631, 20.563]} rotation={[-Math.PI, 0.652, -Math.PI]} scale={[7.07, 9.673, 6.057]} ><meshBasicMaterial map={socialtrees}/></mesh>
       <RigidBody type='fixed' colliders={false} position={[97.837, 164.119, -305.67]} rotation={[0, 0, 1.373]}>
       <mesh geometry={nodes.instagram.geometry}  scale={-127.176} ><meshBasicMaterial map={insta}/></mesh>
       <CuboidCollider args={[30,10,10]} position={[18,0,10]}/>
       </RigidBody>
+      <Leaves position={[97.837, 200.119, -300.67]}  scale={800} />
       <RigidBody colliders={false} type='fixed' position={[231.84, 158.625, 22.233]} rotation={[1.452, -0.317, 0.918]}>
       <mesh geometry={nodes.linkedin.geometry}  scale={142.56} ><meshBasicMaterial map={linkedin}/></mesh>
       <CuboidCollider args={[13,10,40]} position={[-3,0,-30]}/>
       </RigidBody>
+      <Leaves position={[231.84, 198.625, 22.233]} scale={600} />
       <mesh geometry={nodes.trees.geometry} position={[-341.939, 184.638, -316.289]} rotation={[-Math.PI, 0.652, -Math.PI]} scale={[7.07, 9.673, 6.057]} ><meshBasicMaterial map={trees}/></mesh>
+       <Leaves  position={[-341.939, 194.638, -316.289]}  scale={600} />  
+        <Leaves  position={[-330.939, 200.638, -280.289]}  scale={600} />    
       <mesh geometry={nodes.configurator004.geometry}  position={[-225.776, 150.879, 86.279]} scale={4.676} ><meshBasicMaterial map={config}/></mesh>
       <mesh geometry={nodes.configurator001.geometry}  position={[-272.177, 151.619, 84.197]} scale={4.676} ><meshBasicMaterial map={config}/></mesh>
       <mesh geometry={nodes.configurator002.geometry}  position={[-311.63, 152.42, 73.967]} rotation={[0, -0.753, 0]} scale={4.676} ><meshBasicMaterial map={config}/></mesh>

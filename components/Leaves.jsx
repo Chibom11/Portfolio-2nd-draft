@@ -62,7 +62,7 @@ function LeafCloud({ center = [0, 0, 0], count = 600, scale=1,colors = ['#E8830A
         const dist = Math.sqrt(dx * dx + dz * dz)
 
         dummy.position.x += Math.sin(t * 1.4 + swayOffset + i * 0.05) * dist * 0.4 * 0.015
-        dummy.position.y += Math.sin(t * 2.1 + swayOffset + i * 0.03) * 0.0008
+        dummy.position.y += Math.sin(t * 2.1 + swayOffset + i * 0.03) * 0.008
 
         dummy.updateMatrix()
         mesh.setMatrixAt(i, dummy.matrix)

@@ -1,8 +1,9 @@
 import { Canvas } from '@react-three/fiber'
 import React, { Suspense, useRef } from 'react'
 import Experience from '../components/Experience.jsx'
-import { Loader, SoftShadows } from '@react-three/drei'
+import { Loader, SoftShadows, Stars } from '@react-three/drei'
 import { KeyboardControls } from '@react-three/drei'
+import StarBackground from './StarBackground.jsx'
 import * as THREE from 'three'
 function LandingPage() {
   const keyBoardControlMap = [
@@ -16,22 +17,21 @@ function LandingPage() {
 
   return (
     <div className='w-full h-screen flex items-center justify-center bg-black/90'>
-      <div className='absolute w-[98%] h-[95%]'>
+         <StarBackground />
+      <div className='absolute w-[100%] h-[100%]'>
         <KeyboardControls map={keyBoardControlMap}>
-          <Canvas
+                   <Canvas
             shadows
-            className="pl-[100px] w-full h-full rounded-4xl"
-            camera={{
-              fov: 45,
-              near: 0.1,
-              far: 10000,
-              // position:[2,15,-80],
-            }}
+            className="pl-[100px] w-full h-full"
+            camera={{ fov: 45, near: 0.1, far: 10000 }}
             gl={{
+              alpha: true,                          // 👈 transparent canvas bg
               toneMapping: THREE.ACESFilmicToneMapping,
               toneMappingExposure: 1.8,
             }}
+            style={{ background: 'transparent' }}  // 👈 let CSS stars show through
           >
+          
             <Suspense fallback={null}>
               <Experience />
             </Suspense>

@@ -1,4 +1,4 @@
-import { OrbitControls, Environment, useGLTF, CameraControls } from '@react-three/drei'
+import { OrbitControls, Environment, useGLTF, CameraControls, Stars } from '@react-three/drei'
 import React, { useEffect, useRef, useState } from 'react'
 import * as THREE from 'three'
 import  Model  from './RoomTwo.jsx'
@@ -47,7 +47,7 @@ function Experience() {
     // Offset the camera behind/above the character
     // target = character position (+ slight height offset)
     controls.current.setLookAt(
-      pos.x-30,        pos.y + 50,  pos.z + 160,   // camera position
+      pos.x-20,        pos.y + 60,  pos.z + 130,   // camera position
       pos.x,        pos.y + 5,  pos.z,          // look-at target (character)
       true                                          // smooth
     )
@@ -60,8 +60,9 @@ function Experience() {
     <>
       <Perf />
       <OrbitControls/>
-      <color attach="background" args={['#1a0a2e']} />
-      {/* <fogExp2 attach="fog" color="#7b4f8a" density={0.04} /> */}
+      
+     
+      {/* <fogExp2 attach="fog" color="#7b4f8a" density={0.0004} /> */}
       <ambientLight color="purple" intensity={2.3} />
       <directionalLight
         castShadow
@@ -76,7 +77,7 @@ function Experience() {
         ref={controls}
         minPolarAngle={degToRad(10)}
         maxPolarAngle={degToRad(80)}
-        minDistance={0.5}
+        minDistance={0.001}
         maxDistance={20}
         smoothTime={0.25}           // keep this low for tight follow
         draggingSmoothTime={0.1}
@@ -101,17 +102,17 @@ function Experience() {
 
           {/* <Grass position={[-0.2, -0.1567, 0.3]} radius={0.07} count={120} isNight={isNight} />
           <Grass position={[0.10, -0.17, -0.08]} radius={0.04} count={100} isNight={isNight} />
-          <Leaves position={[0.10,  0.3, -0.08]} scale={6} />
           <Leaves position={[-0.05, 0.3, -0.08]} scale={6} />
           <Leaves position={[0.15,  0.3, -0.08]} scale={6} />
           <Leaves position={[0.12,  0.4, -0.08]} scale={6} /> */}
+          
         </Selection>
       </Physics>
       <EffectComposer>
 
   {/* 🌸 Bloom — glowing lights/emissives */}
   <Bloom
-    intensity={0.4}
+    intensity={0.5}
     luminanceThreshold={0.2}
     luminanceSmoothing={0.9}
     kernelSize={KernelSize.LARGE}
