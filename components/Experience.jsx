@@ -2,6 +2,7 @@ import { OrbitControls, Environment, useGLTF, CameraControls, Stars } from '@rea
 import React, { useEffect, useRef, useState } from 'react'
 import * as THREE from 'three'
 import  Model  from './RoomTwo.jsx'
+import {Miles} from './Miles.jsx'
 import {
   Bloom,
   EffectComposer,
@@ -84,7 +85,7 @@ function Experience() {
    
       />
 
-      <Physics gravity={[0,-80,0]}>
+      <Physics  gravity={[0,-80,0]}>
         <Selection>
     
 
@@ -97,7 +98,8 @@ function Experience() {
           />
 
           {/* Pass the ref down */}
-          <Character ref={characterRb} />
+          {/* <Character ref={characterRb} /> */}
+          <Miles ref={characterRb} />
           {/* <Spiderman  ref={characterRb}/> */}
 
           {/* <Grass position={[-0.2, -0.1567, 0.3]} radius={0.07} count={120} isNight={isNight} />

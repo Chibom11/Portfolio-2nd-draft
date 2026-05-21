@@ -13,6 +13,7 @@ function LandingPage() {
     { name: "right",    keys: ["KeyA"] },
     { name: "flip",     keys: ["Space"] },
     { name: "jog",      keys: ["Shift"] },
+    {name:"dance", keys:['KeyQ']},
   ]
 
   return (

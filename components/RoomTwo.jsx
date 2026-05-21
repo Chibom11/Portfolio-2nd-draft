@@ -151,9 +151,17 @@ useEffect(() => {
           intensity={10}
           color="blue"
         />     
-      <RigidBody type='fixed' colliders='cuboid'>
-      <mesh geometry={nodes.base.geometry} position={[-58.65, 150.746, 9.6]} scale={356.061} ><meshBasicMaterial map={base}/></mesh>
-      </RigidBody>
+<RigidBody type='fixed' colliders={false}>
+  <mesh
+    geometry={nodes.base.geometry}
+    position={[-58.65, 150.746, 9.6]}
+    scale={356.061}
+  >
+    <meshBasicMaterial map={base}/>
+  </mesh>
+  {/* Half-extents: tune Y (thickness) and XZ to match your floor */}
+  <CuboidCollider args={[356, 2, 356]} position={[-58.65, 150.746, 9.6]} />
+</RigidBody>
       
       {/* <mesh position={[-58.65, 150.746, 9.6]} scale={500.061} rotation={[Math.PI/2,0,Math.PI/2]}><planeGeometry color="blue"/><meshStandardMaterial/></mesh> */}
       <RigidBody type='fixed' colliders={false} position={[-248.191, 166.704, -149.722]}>
@@ -210,15 +218,15 @@ useEffect(() => {
       <mesh geometry={nodes.instagram.geometry}  scale={-127.176} ><meshBasicMaterial map={insta}/></mesh>
       <CuboidCollider args={[30,10,10]} position={[18,0,10]}/>
       </RigidBody>
-      <Leaves position={[97.837, 200.119, -300.67]}  scale={800} />
+      {/* <Leaves position={[97.837, 200.119, -300.67]}  scale={800} /> */}
       <RigidBody colliders={false} type='fixed' position={[231.84, 158.625, 22.233]} rotation={[1.452, -0.317, 0.918]}>
       <mesh geometry={nodes.linkedin.geometry}  scale={142.56} ><meshBasicMaterial map={linkedin}/></mesh>
       <CuboidCollider args={[13,10,40]} position={[-3,0,-30]}/>
       </RigidBody>
-      <Leaves position={[231.84, 198.625, 22.233]} scale={600} />
+      {/* <Leaves position={[231.84, 198.625, 22.233]} scale={600} /> */}
       <mesh geometry={nodes.trees.geometry} position={[-341.939, 184.638, -316.289]} rotation={[-Math.PI, 0.652, -Math.PI]} scale={[7.07, 9.673, 6.057]} ><meshBasicMaterial map={trees}/></mesh>
-       <Leaves  position={[-341.939, 194.638, -316.289]}  scale={600} />  
-        <Leaves  position={[-330.939, 200.638, -280.289]}  scale={600} />    
+       {/* <Leaves  position={[-341.939, 194.638, -316.289]}  scale={600} />  
+        <Leaves  position={[-330.939, 200.638, -280.289]}  scale={600} />     */}
       <mesh geometry={nodes.configurator004.geometry}  position={[-225.776, 150.879, 86.279]} scale={4.676} ><meshBasicMaterial map={config}/></mesh>
       <mesh geometry={nodes.configurator001.geometry}  position={[-272.177, 151.619, 84.197]} scale={4.676} ><meshBasicMaterial map={config}/></mesh>
       <mesh geometry={nodes.configurator002.geometry}  position={[-311.63, 152.42, 73.967]} rotation={[0, -0.753, 0]} scale={4.676} ><meshBasicMaterial map={config}/></mesh>
