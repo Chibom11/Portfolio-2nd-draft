@@ -1,7 +1,7 @@
 import { OrbitControls, Environment, useGLTF, CameraControls, Stars } from '@react-three/drei'
 import React, { useEffect, useRef, useState } from 'react'
 import * as THREE from 'three'
-import  Model  from './RoomTwo.jsx'
+import { Model } from './RoomTwo.jsx'
 import {Miles} from './Miles.jsx'
 import {
   Bloom,
@@ -35,7 +35,8 @@ function Experience() {
   const controls = useRef()
   const characterRb = useRef()        
   const [isNight, setIsNight] = useState(false)
-
+ const [lkd,setLkd]=useState(false)
+const linkedinRef = useRef()
  
 
   // // Follow character every frame
@@ -44,6 +45,22 @@ function Experience() {
 
     // Get world position from the RigidBody
     const pos = characterRb.current.translation()  // rapier gives {x,y,z}
+
+    if(linkedinRef.current){
+       const linkedinPos = new THREE.Vector3()
+       linkedinRef.current.getWorldPosition(linkedinPos);
+
+       
+       const characterPos=new THREE.Vector3(pos.x,pos.y,pos.z)
+
+       const dist=characterPos.distanceTo(linkedinPos);
+
+       if(dist<30){
+        setLkd(true);
+       }else{
+       setLkd(false);}
+       
+    }
 
     // Offset the camera behind/above the character
     // target = character position (+ slight height offset)
@@ -54,7 +71,7 @@ function Experience() {
     )
   })
 
-
+useEffect(()=>{console.log("Lkd",lkd)},[lkd])
 
 
   return (
@@ -89,36 +106,34 @@ function Experience() {
         <Selection>
     
 
-          <Model
-            scale={0.8}
-            position={[0, -124.5, -16]}
-            rotation={[0, Math.PI / 3, 0]}
-            isNight={isNight}
-            setIsNight={setIsNight}
-          />
+<Model
+  ref={linkedinRef}
+  scale={0.8}
+  position={[0, -124.5, -16]}
+  rotation={[0, Math.PI / 3, 0]}
+  isNight={isNight}
+  setIsNight={setIsNight}
+  showLinkedin={lkd}
+/>
 
           {/* Pass the ref down */}
           {/* <Character ref={characterRb} /> */}
           <Miles ref={characterRb} />
           {/* <Spiderman  ref={characterRb}/> */}
 
-          {/* <Grass position={[-0.2, -0.1567, 0.3]} radius={0.07} count={120} isNight={isNight} />
-          <Grass position={[0.10, -0.17, -0.08]} radius={0.04} count={100} isNight={isNight} />
-          <Leaves position={[-0.05, 0.3, -0.08]} scale={6} />
-          <Leaves position={[0.15,  0.3, -0.08]} scale={6} />
-          <Leaves position={[0.12,  0.4, -0.08]} scale={6} /> */}
+    
           
         </Selection>
       </Physics>
       <EffectComposer>
 
   {/* 🌸 Bloom — glowing lights/emissives */}
-  <Bloom
-    intensity={0.5}
+  {/* <Bloom
+    intensity={0.3}
     luminanceThreshold={0.2}
     luminanceSmoothing={0.9}
     kernelSize={KernelSize.LARGE}
-  />
+  /> */}
 
   {/* 🔭 Depth of Field — blurs far/near objects */}
   {/* <DepthOfField

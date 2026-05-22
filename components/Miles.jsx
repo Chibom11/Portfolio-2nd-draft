@@ -95,9 +95,9 @@ console.log(actions)
       if(event.key.toLowerCase() === 'q' && !isFlipping.current){
         isFlipping.current=true;
         playAnim('dance');
-        const duration=(actions['dance']?._clip.duration ?? 1)*1000
+        const duration=(actions['dance']?._clip.duration ?? 1)*1000;
         setTimeout(()=>{
-          isFlipping.current=false
+          isFlipping.current=false;
         },duration)
       }
     }
