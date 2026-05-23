@@ -58,12 +58,15 @@ const linkedinRef = useRef()
 
        if(dist<70){
         setLkd(true);
-        if(dist<50){
-          setLkd(true);
-         setPlayFall(true);
+        if (dist < 60) {
+          setPlayFall(true)
+          const dir = linkedinPos.clone().sub(characterPos).normalize()
+          characterRb.current.applyImpulse(
+            { x: dir.x * 9000, y: 0, z: dir.z * 9000 },
+            true
+          )
         }else{
-          setLkd(true);
-         setPlayFall(false)
+          setPlayFall(false)
         }
         
        }else{

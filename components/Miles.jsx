@@ -105,17 +105,17 @@ console.log(actions)
     return ()=> document.removeEventListener('keydown',handleKeyQDown)
   },[actions])
 
-  useEffect(()=>{
-    if(props.playfall===true && !isFlipping.current){
-      isFlipping.current=true;
-
-      playAnim('pulled');
-        const duration=(actions['pulled']?._clip.duration ?? 1)*1000;
-        setTimeout(()=>{
-          isFlipping.current=false;
-        },duration)
-    }
-  },[props.playfall,actions])
+ useEffect(() => {
+  if (props.playfall === true && !isFlipping.current) {
+    isFlipping.current = true
+    playAnim('pulled')
+    const duration = (actions['pulled']?._clip.duration ?? 1) * 1000
+    setTimeout(() => {
+      isFlipping.current = false
+      window.open('https://www.linkedin.com/in/shivam-surroach-b54259294/', '_blank')
+    }, 500)
+  }
+}, [props.playfall, actions])
 
   return (
   
