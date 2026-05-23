@@ -6,325 +6,330 @@ Command: npx gltfjsx@6.5.3 public/model/room.glb --draco
 import React, { forwardRef, useEffect, useRef } from 'react'
 import { Html, useGLTF, useHelper } from '@react-three/drei'
 import { useTexture } from '@react-three/drei'
+import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import { RectAreaLightHelper } from 'three/examples/jsm/helpers/RectAreaLightHelper'
 import { RectAreaLightUniformsLib } from 'three/examples/jsm/lights/RectAreaLightUniformsLib'
 import { CuboidCollider, RigidBody } from '@react-three/rapier'
 import Leaves from './Leaves'
+
 RectAreaLightUniformsLib.init()
+function LinkedInGlow() {
+  const matRef = useRef()
 
-export const  Model= forwardRef((props,linkedinRef)=> {
+  useFrame(({ clock }) => {
+    if (matRef.current) {
+      matRef.current.uniforms.uTime.value = clock.getElapsedTime()
+    }
+  })
+
+  return (
+    <mesh position={[-10, 40, -8]} rotation={[-Math.PI / 2, 0, 0]}>
+      <circleGeometry args={[20, 64]} />
+      <shaderMaterial
+        ref={matRef}
+        transparent
+        depthWrite={false}
+        side={THREE.DoubleSide}
+        uniforms={{
+          uTime: { value: 0 },
+        }}
+        vertexShader={`
+          varying vec2 vUv;
+          void main() {
+            vUv = uv;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+          }
+        `}
+        fragmentShader={`
+          uniform float uTime;
+          varying vec2 vUv;
+
+          float hash(float n)       { return fract(sin(n) * 43758.5453123); }
+          float hash2(vec2 p)       { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+          float stepped(float t, float s) { return floor(t * s) / s; }
+
+          void main() {
+            vec2 uv = vUv;
+            float t = uTime;
+
+            vec2  c    = uv - 0.5;
+            float dist = length(c);
+            if (dist > 0.49) discard;
+
+            float edge     = 1.0 - smoothstep(0.38, 0.49, dist);
+            float innerDark = smoothstep(0.0, 0.42, dist);
+
+            float sliceT   = stepped(t, 18.0);
+            float row      = floor(uv.y * 60.0);
+            float sliceOn  = step(0.78, hash(row + sliceT * 13.0));
+            float sliceAmt = (hash(row + sliceT) - 0.5) * 0.35;
+            uv.x = mix(uv.x, fract(uv.x + sliceAmt), sliceOn);
+
+            float blockT  = stepped(t, 5.0);
+            vec2  bUv     = floor(uv * vec2(10.0, 14.0));
+            float blockOn = step(0.75, hash2(bUv + blockT * 5.0));
+
+            float scan = pow(sin(uv.y * 300.0 - t * 12.0) * 0.5 + 0.5, 4.0) * 0.4;
+
+            float splitT   = stepped(t, 20.0);
+            float split    = 0.03 + 0.025 * hash(splitT);
+            float rNoise   = hash2(vec2(uv.x + split, uv.y) + splitT);
+            float bNoise   = hash2(vec2(uv.x - split, uv.y) + splitT);
+            float gNoise   = hash2(uv + splitT);
+
+            float noise    = hash2(floor(uv * 80.0) + stepped(t, 25.0));
+
+            vec3 linkedBlue  = vec3(0.04, 0.40, 0.76);
+            vec3 darkBase    = vec3(0.0,  0.02, 0.08);
+            vec3 matrixGreen = vec3(0.0,  0.9,  0.2);
+            vec3 hotPink     = vec3(1.0,  0.05, 0.5);
+            vec3 electricWht = vec3(0.8,  0.95, 1.0);
+
+            vec3 col = mix(darkBase, linkedBlue * 0.4, innerDark * 0.6);
+
+            vec3 blockColor = mix(matrixGreen * noise, hotPink, step(0.92, hash2(bUv + blockT)));
+            col = mix(col, blockColor, blockOn * 0.85);
+
+            col.r += rNoise * 0.15 * blockOn;
+            col.g += gNoise * 0.06;
+            col.b += bNoise * 0.18 * blockOn;
+
+            col += electricWht * step(0.993, noise) * 1.2;
+            col *= (1.0 - scan);
+
+            float rim = smoothstep(0.30, 0.46, dist) * smoothstep(0.49, 0.38, dist);
+            col = mix(col, linkedBlue * 2.2, rim * 0.9);
+
+            float flash = step(0.994, hash(stepped(t, 10.0)));
+            col = mix(col, electricWht, flash * 0.7);
+
+            float flicker = 0.8 + 0.2 * hash(stepped(t, 30.0));
+
+            float alpha = edge * flicker;
+            alpha = clamp(alpha, 0.0, 1.0);
+
+            gl_FragColor = vec4(col, alpha);
+          }
+        `}
+      />
+    </mesh>
+  )
+}
+export const Model = forwardRef((props, linkedinRef) => {
   const { nodes, materials } = useGLTF('/model/mo.glb')
-const lightRef = useRef()
-const targetRef = useRef()
+  const lightRef = useRef()
+  const targetRef = useRef()
+  const dirRef = useRef()
+  const dirTargetRef = useRef()
+  const rectRef = useRef()
 
-// useHelper(lightRef, THREE.SpotLightHelper, "cyan")
+  useEffect(() => {
+    if (dirRef.current && dirTargetRef.current) {
+      dirRef.current.target = dirTargetRef.current
+    }
+  }, [])
 
-const dirRef = useRef()
-const dirTargetRef = useRef()
+  useEffect(() => {
+    if (lightRef.current && targetRef.current) {
+      lightRef.current.target = targetRef.current
+    }
+  }, [])
 
-// useHelper(dirRef, THREE.DirectionalLightHelper, 20, "white")
+  const base = useTexture('/textures/Room/base.webp')
+  base.flipY = false
+  base.colorSpace = THREE.SRGBColorSpace
 
-const rectRef = useRef()
+  const turf = useTexture('/textures/Room/turf.webp')
+  turf.flipY = false
+  turf.colorSpace = THREE.SRGBColorSpace
 
+  const nonturf = useTexture('/textures/Room/nonturf.webp')
+  nonturf.flipY = false
+  nonturf.colorSpace = THREE.SRGBColorSpace
 
-useEffect(() => {
-  if (dirRef.current && dirTargetRef.current) {
-    dirRef.current.target = dirTargetRef.current
-  }
-}, [])
+  const chair001 = useTexture('/textures/Room/chair001.webp')
+  chair001.flipY = false
+  chair001.colorSpace = THREE.SRGBColorSpace
 
-useEffect(() => {
-  if (lightRef.current && targetRef.current) {
-    lightRef.current.target = targetRef.current
-  }
-}, [])
+  const chair003 = useTexture('/textures/Room/chair003.webp')
+  chair003.flipY = false
+  chair003.colorSpace = THREE.SRGBColorSpace
 
-       const base=useTexture('/textures/Room/base.webp')
-      base.flipY=false
-      base.colorSpace=THREE.SRGBColorSpace
-     const turf=useTexture('/textures/Room/turf.webp')
-      turf.flipY=false
-      turf.colorSpace=THREE.SRGBColorSpace
+  const config = useTexture('/textures/Room/config.webp')
+  config.flipY = false
+  config.colorSpace = THREE.SRGBColorSpace
 
-     const nonturf=useTexture('/textures/Room/nonturf.webp')
-      nonturf.flipY=false
-      nonturf.colorSpace=THREE.SRGBColorSpace
+  const couch = useTexture('/textures/Room/couch.001.webp')
+  couch.flipY = false
+  couch.colorSpace = THREE.SRGBColorSpace
 
-     const chair001=useTexture('/textures/Room/chair001.webp')
-      chair001.flipY=false
-      chair001.colorSpace=THREE.SRGBColorSpace
+  const db = useTexture('/textures/Room/db.webp')
+  db.flipY = false
+  db.colorSpace = THREE.SRGBColorSpace
 
-     const chair003=useTexture('/textures/Room/chair003.webp')
-      chair003.flipY=false
-      chair003.colorSpace=THREE.SRGBColorSpace
+  const fence002 = useTexture('/textures/Room/fence.002.webp')
+  fence002.flipY = false
+  fence002.colorSpace = THREE.SRGBColorSpace
 
-     const config=useTexture('/textures/Room/config.webp')
-      config.flipY=false
-      config.colorSpace=THREE.SRGBColorSpace
+  const fence003 = useTexture('/textures/Room/fenceleft2nd.webp')
+  fence003.flipY = false
+  fence003.colorSpace = THREE.SRGBColorSpace
 
-     const couch=useTexture('/textures/Room/couch.001.webp')
-      couch.flipY=false
-      couch.colorSpace=THREE.SRGBColorSpace
+  const fence004 = useTexture('/textures/Room/fenceright1st.webp')
+  fence004.flipY = false
+  fence004.colorSpace = THREE.SRGBColorSpace
 
-     const db=useTexture('/textures/Room/db.webp')
-      db.flipY=false
-      db.colorSpace=THREE.SRGBColorSpace
+  const github = useTexture('/textures/Room/github.webp')
+  github.flipY = false
+  github.colorSpace = THREE.SRGBColorSpace
 
-      
-     const fence002=useTexture('/textures/Room/fence.002.webp')
-      fence002.flipY=false
-      fence002.colorSpace=THREE.SRGBColorSpace
+  const insta = useTexture('/textures/Room/insta.webp')
+  insta.flipY = false
+  insta.colorSpace = THREE.SRGBColorSpace
 
-     const fence003=useTexture('/textures/Room/fenceleft2nd.webp')
-      fence003.flipY=false
-      fence003.colorSpace=THREE.SRGBColorSpace
+  const linkedin = useTexture('/textures/Room/linkedin.webp')
+  linkedin.flipY = false
+  linkedin.colorSpace = THREE.SRGBColorSpace
 
-     const fence004=useTexture('/textures/Room/fenceright1st.webp')
-      fence004.flipY=false
-      fence004.colorSpace=THREE.SRGBColorSpace
+  const name = useTexture('/textures/Room/name.webp')
+  name.flipY = false
+  name.colorSpace = THREE.SRGBColorSpace
 
-     const github=useTexture('/textures/Room/github.webp')
-      github.flipY=false
-      github.colorSpace=THREE.SRGBColorSpace
+  const socialtrees = useTexture('/textures/Room/socialtrees.webp')
+  socialtrees.flipY = false
+  socialtrees.colorSpace = THREE.SRGBColorSpace
 
-     const insta=useTexture('/textures/Room/insta.webp')
-      insta.flipY=false
-      insta.colorSpace=THREE.SRGBColorSpace
+  const proj = useTexture('/textures/Room/projector.webp')
+  proj.flipY = false
+  proj.colorSpace = THREE.SRGBColorSpace
 
-      
-     const linkedin=useTexture('/textures/Room/linkedin.webp')
-      linkedin.flipY=false
-      linkedin.colorSpace=THREE.SRGBColorSpace
+  const sl = useTexture('/textures/Room/streetlite.webp')
+  sl.flipY = false
+  sl.colorSpace = THREE.SRGBColorSpace
 
-     const name=useTexture('/textures/Room/name.webp')
-      name.flipY=false
-      name.colorSpace=THREE.SRGBColorSpace
+  const trees = useTexture('/textures/Room/trees1st.webp')
+  trees.flipY = false
+  trees.colorSpace = THREE.SRGBColorSpace
 
-     const socialtrees=useTexture('/textures/Room/socialtrees.webp')
-      socialtrees.flipY=false
-      socialtrees.colorSpace=THREE.SRGBColorSpace
+  const rv = useTexture('/textures/Room/rv.webp')
+  rv.flipY = false
+  rv.colorSpace = THREE.SRGBColorSpace
 
-     const proj=useTexture('/textures/Room/projector.webp')
-      proj.flipY=false
-      proj.colorSpace=THREE.SRGBColorSpace
+  const road = useTexture('/textures/Room/road.webp')
+  road.flipY = false
+  road.colorSpace = THREE.SRGBColorSpace
 
-     const sl=useTexture('/textures/Room/streetlite.webp')
-      sl.flipY=false
-      sl.colorSpace=THREE.SRGBColorSpace
+  const rsl = useTexture('/textures/Room/roadsidestreetlite.webp')
+  rsl.flipY = false
+  rsl.colorSpace = THREE.SRGBColorSpace
 
-     const trees=useTexture('/textures/Room/trees1st.webp')
-      trees.flipY=false
-      trees.colorSpace=THREE.SRGBColorSpace
-
-     const rv=useTexture('/textures/Room/rv.webp')
-      rv.flipY=false
-      rv.colorSpace=THREE.SRGBColorSpace
-
-      const road=useTexture('/textures/Room/road.webp')
-      road.flipY=false
-      road.colorSpace=THREE.SRGBColorSpace
-
-      const rsl=useTexture('/textures/Room/roadsidestreetlite.webp')
-      rsl.flipY=false
-      rsl.colorSpace=THREE.SRGBColorSpace
-      return (
-
+  return (
     <group {...props} dispose={null}>
-             <rectAreaLight
-          ref={rectRef}
-          position={[-184.632, 198.49, 75.712]}
-          rotation={[-Math.PI / 2, 0, 0]}   
-          width={180}                         
-          height={50}                       
-          intensity={20}
-          color="#FF007A"
-        />  
-      <mesh geometry={nodes.configurator003.geometry}  position={[-184.632, 151.49, 75.712]} rotation={[0, 0.873, 0]} scale={4.676} ><meshBasicMaterial map={config}/></mesh>
-          
-          <rectAreaLight
-        
-          position={[-54.65, 270.746, -140.6]} 
-          rotation={[-Math.PI / 2, 0, 0]}   
-          width={300}                         
-          height={100}                       
-          intensity={10}
-          color="blue"
-        />     
-<RigidBody type='fixed' colliders={false}>
-  <mesh
-    geometry={nodes.base.geometry}
-    position={[-58.65, 150.746, 9.6]}
-    scale={356.061}
-  >
-    <meshBasicMaterial map={base}/>
-  </mesh>
-  {/* Half-extents: tune Y (thickness) and XZ to match your floor */}
-  <CuboidCollider args={[356, 2, 356]} position={[-58.65, 150.746, 9.6]} />
-</RigidBody>
-      
-      {/* <mesh position={[-58.65, 150.746, 9.6]} scale={500.061} rotation={[Math.PI/2,0,Math.PI/2]}><planeGeometry color="blue"/><meshStandardMaterial/></mesh> */}
-      <RigidBody type='fixed' colliders={false} position={[-248.191, 166.704, -149.722]}>
-        <mesh
-          geometry={nodes.bbrv.geometry}
-          rotation={[Math.PI, -1.536, Math.PI]}
-          scale={[6.216, 8.202, 6.216]}
-        >
-          <meshBasicMaterial map={rv}/>
+      <rectAreaLight
+        ref={rectRef}
+        position={[-184.632, 198.49, 75.712]}
+        rotation={[-Math.PI / 2, 0, 0]}
+        width={180}
+        height={50}
+        intensity={20}
+        color="#FF007A"
+      />
+      <mesh geometry={nodes.configurator003.geometry} position={[-184.632, 151.49, 75.712]} rotation={[0, 0.873, 0]} scale={4.676}><meshBasicMaterial map={config} /></mesh>
+
+      <rectAreaLight
+        position={[-54.65, 270.746, -140.6]}
+        rotation={[-Math.PI / 2, 0, 0]}
+        width={300}
+        height={100}
+        intensity={10}
+        color="blue"
+      />
+
+      <RigidBody type='fixed' colliders={false}>
+        <mesh geometry={nodes.base.geometry} position={[-58.65, 150.746, 9.6]} scale={356.061}>
+          <meshBasicMaterial map={base} />
         </mesh>
-        <CuboidCollider
-          args={[40, 13, 17]}   
-          position={[-10, 1, 0]}   
-        />
+        <CuboidCollider args={[356, 2, 356]} position={[-58.65, 150.746, 9.6]} />
       </RigidBody>
+
+      <RigidBody type='fixed' colliders={false} position={[-248.191, 166.704, -149.722]}>
+        <mesh geometry={nodes.bbrv.geometry} rotation={[Math.PI, -1.536, Math.PI]} scale={[6.216, 8.202, 6.216]}>
+          <meshBasicMaterial map={rv} />
+        </mesh>
+        <CuboidCollider args={[40, 13, 17]} position={[-10, 1, 0]} />
+      </RigidBody>
+
       <RigidBody type="fixed" colliders='cuboid'>
-      <mesh geometry={nodes.display_board.geometry}  position={[-131.666, 177.577, 64.177]} rotation={[0, -0.702, 0]} scale={[1.649, 19.099, 2.446]} ><meshBasicMaterial map={db}/></mesh>
+        <mesh geometry={nodes.display_board.geometry} position={[-131.666, 177.577, 64.177]} rotation={[0, -0.702, 0]} scale={[1.649, 19.099, 2.446]}><meshBasicMaterial map={db} /></mesh>
       </RigidBody>
+
       <RigidBody type='fixed' colliders='trimesh'>
-      <mesh geometry={nodes.road.geometry}  position={[57.692, 152.369, 69.15]} rotation={[Math.PI, -1.516, Math.PI]} scale={[-22.882, -103.602, -23.889]}><meshBasicMaterial map={road}/></mesh>
+        <mesh geometry={nodes.road.geometry} position={[57.692, 152.369, 69.15]} rotation={[Math.PI, -1.516, Math.PI]} scale={[-22.882, -103.602, -23.889]}><meshBasicMaterial map={road} /></mesh>
       </RigidBody>
-              <rectAreaLight
-         
-          position={[-222.044, 240, 320.742]}
-          rotation={[-Math.PI / 2, 0, 0]}   
-          width={300}                         
-          height={20}                       
-          intensity={50}
-          color="white"
-        />
+
+      <rectAreaLight
+        position={[-222.044, 240, 320.742]}
+        rotation={[-Math.PI / 2, 0, 0]}
+        width={300}
+        height={20}
+        intensity={50}
+        color="white"
+      />
 
       <RigidBody type='fixed' colliders="trimesh" position={[-222.044, 168.092, 260.742]}>
-      <mesh geometry={nodes.turf.geometry}   rotation={[-Math.PI / 2, 0, 0]} scale={[152.069, 4.788, 4.455]} ><meshBasicMaterial map={nonturf}/></mesh>
-      {/* <CuboidCollider args={[165,2,100]} position={[0,-12,0]}/> */}
+        <mesh geometry={nodes.turf.geometry} rotation={[-Math.PI / 2, 0, 0]} scale={[152.069, 4.788, 4.455]}><meshBasicMaterial map={nonturf} /></mesh>
       </RigidBody>
-      <RigidBody type='fixed' colliders='cuboid' position={[150.796, 152.086, -232.975]}  rotation={[1.578, -0.036, 1.032]}>
-      <mesh geometry={nodes.Text001.geometry}   scale={[64.628, 56.461, 51.37]} ><meshBasicMaterial map={name}/></mesh>
-      
+
+      <RigidBody type='fixed' colliders='cuboid' position={[150.796, 152.086, -232.975]} rotation={[1.578, -0.036, 1.032]}>
+        <mesh geometry={nodes.Text001.geometry} scale={[64.628, 56.461, 51.37]}><meshBasicMaterial map={name} /></mesh>
       </RigidBody>
+
       <RigidBody type='fixed' colliders={false} position={[194.315, 163.656, 281.801]} rotation={[0, 1.562, 1.571]}>
-      <mesh geometry={nodes.projector_screen.geometry}   scale={[-27.516, -65.159, -27.516]} ><meshBasicMaterial map={proj}/></mesh>
-      <CuboidCollider args={[20,20,3]} position={[10,1,0]}/>
+        <mesh geometry={nodes.projector_screen.geometry} scale={[-27.516, -65.159, -27.516]}><meshBasicMaterial map={proj} /></mesh>
+        <CuboidCollider args={[20, 20, 3]} position={[10, 1, 0]} />
       </RigidBody>
-      <RigidBody type='fixed' colliders='trimesh'  position={[89.267, 159.587, 279.353]} rotation={[-2.923, 1.53, -1.788]} >
-      <mesh geometry={nodes.couch.geometry} scale={8.798} ><meshBasicMaterial map={couch}/></mesh>
+
+      <RigidBody type='fixed' colliders='trimesh' position={[89.267, 159.587, 279.353]} rotation={[-2.923, 1.53, -1.788]}>
+        <mesh geometry={nodes.couch.geometry} scale={8.798}><meshBasicMaterial map={couch} /></mesh>
       </RigidBody>
+
       <RigidBody type='fixed' colliders={false} position={[94.512, 161.988, -76.712]} rotation={[1.417, -0.336, 1.057]}>
-      <mesh geometry={nodes.github.geometry}  scale={128.79} ><meshBasicMaterial map={github}/></mesh>
-     <CuboidCollider args={[10,10,60]} position={[0,0,10]}/>
+        <mesh geometry={nodes.github.geometry} scale={128.79}><meshBasicMaterial map={github} /></mesh>
+        <CuboidCollider args={[10, 10, 60]} position={[0, 0, 10]} />
       </RigidBody>
-      <Leaves position={[104.512, 200.988, -79.712]}  scale={800} />
-      <mesh geometry={nodes.socialtrees.geometry}  position={[243.107, 184.631, 20.563]} rotation={[-Math.PI, 0.652, -Math.PI]} scale={[7.07, 9.673, 6.057]} ><meshBasicMaterial map={socialtrees}/></mesh>
+
+      <Leaves position={[104.512, 200.988, -79.712]} scale={800} />
+      <mesh geometry={nodes.socialtrees.geometry} position={[243.107, 184.631, 20.563]} rotation={[-Math.PI, 0.652, -Math.PI]} scale={[7.07, 9.673, 6.057]}><meshBasicMaterial map={socialtrees} /></mesh>
+
       <RigidBody type='fixed' colliders={false} position={[97.837, 164.119, -305.67]} rotation={[0, 0, 1.373]}>
-      <mesh geometry={nodes.instagram.geometry}  scale={-127.176} ><meshBasicMaterial map={insta}/></mesh>
-      <CuboidCollider args={[30,10,10]} position={[18,0,10]}/>
+        <mesh geometry={nodes.instagram.geometry} scale={-127.176}><meshBasicMaterial map={insta} /></mesh>
+        <CuboidCollider args={[30, 10, 10]} position={[18, 0, 10]} />
       </RigidBody>
-      {/* <Leaves position={[97.837, 200.119, -300.67]}  scale={800} /> */}
- <RigidBody colliders={false} type='fixed' position={[231.84, 158.625, 22.233]} rotation={[1.452, -0.317, 0.918]}>
-  <mesh
-    ref={linkedinRef}
-    geometry={nodes.linkedin.geometry}
-    scale={142.56}
-  >
-    <meshBasicMaterial map={linkedin} />
-  </mesh>
 
-  <CuboidCollider args={[13,10,40]} position={[-3,0,-30]}/>
+      {/* ── LinkedIn billboard ── */}
+      <RigidBody colliders={false} type='fixed' position={[231.84, 158.625, 22.233]} rotation={[1.452, -0.317, 0.918]}>
+        <mesh ref={linkedinRef} geometry={nodes.linkedin.geometry} scale={142.56}>
+          <meshBasicMaterial map={linkedin} />
+        </mesh>
 
-  {props.showLinkedin && (
-  <Html position={[0, 80, 0]} center distanceFactor={120} occlude={false}>
-    <div style={{
-      width: 300,
-      background: 'white',
-      borderRadius: 12,
-      overflow: 'hidden',
-      fontFamily: 'system-ui, sans-serif',
-      border: '0.5px solid rgba(0,0,0,0.12)',
-      boxShadow: '0 12px 40px rgba(0,0,0,0.2)',
-    }}>
+        <CuboidCollider args={[13, 10, 40]} position={[-3, 0, -30]} />
 
-      {/* Banner */}
-      <div style={{ height: 80, background: '#0A66C2', position: 'relative' }}>
-        <div style={{
-          position: 'absolute', top: 8, right: 10,
-          background: 'rgba(255,255,255,0.15)', borderRadius: 4,
-          padding: '3px 8px', display: 'flex', alignItems: 'center', gap: 5,
-        }}>
-          <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#5EFF8B', display: 'inline-block' }} />
-          <span style={{ fontSize: 11, color: '#fff', fontWeight: 500 }}>Open to work</span>
-        </div>
-        <div style={{
-          position: 'absolute', bottom: -26, left: 16,
-          width: 52, height: 52, borderRadius: '50%',
-          background: '#1a1a2e', border: '3px solid white',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontWeight: 500, fontSize: 17, color: '#fff', letterSpacing: 1,
-        }}>SS</div>
-      </div>
+        {props.showLinkedin &&<LinkedInGlow />}
 
-      {/* Name */}
-      <div style={{ padding: '34px 16px 0' }}>
-        <p style={{ margin: 0, fontSize: 15, fontWeight: 600, color: '#111' }}>Shivam Surroach</p>
-        <p style={{ margin: '3px 0 0', fontSize: 12, color: '#555', lineHeight: 1.5 }}>
-          Full-stack developer & 3D web engineer
-        </p>
-      </div>
 
-      {/* Location row */}
-      <div style={{
-        padding: '10px 16px', display: 'flex', gap: 8, alignItems: 'center',
-        borderBottom: '0.5px solid #eee', fontSize: 12, color: '#777',
-      }}>
-        <span>📍</span><span>India</span>
-      </div>
-
-      {/* Domain chips */}
-      <div style={{ padding: '12px 16px', borderBottom: '0.5px solid #eee' }}>
-        <p style={{ margin: '0 0 8px', fontSize: 10, fontWeight: 600, color: '#aaa', letterSpacing: '0.07em', textTransform: 'uppercase' }}>Domains</p>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 5 }}>
-          {['3D / WebGL', 'React / R3F', 'Backend', 'UI / Design'].map(d => (
-            <div key={d} style={{
-              padding: '5px 8px', background: '#f5f5f5',
-              borderRadius: 6, border: '0.5px solid #e0e0e0',
-              fontSize: 11, color: '#333',
-            }}>{d}</div>
-          ))}
-        </div>
-      </div>
-
-      {/* CTAs */}
-      <div style={{ padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: 8 }}>
-        <a href="https://www.linkedin.com/in/shivam-surroach-b54259294/" target="_blank" rel="noopener"
-          style={{
-            display: 'block', textAlign: 'center', background: '#0A66C2',
-            color: '#fff', borderRadius: 8, padding: '9px 0',
-            fontSize: 13, fontWeight: 600, textDecoration: 'none',
-          }}>View profile</a>
-        <a href="https://www.linkedin.com/messaging/compose/?recipient=shivam-surroach-b54259294" target="_blank" rel="noopener"
-          style={{
-            display: 'block', textAlign: 'center', background: 'white',
-            color: '#0A66C2', border: '1.5px solid #0A66C2',
-            borderRadius: 8, padding: '9px 0',
-            fontSize: 13, fontWeight: 600, textDecoration: 'none',
-          }}>Send message</a>
-      </div>
-
-      <p style={{ margin: 0, padding: '0 0 12px', fontSize: 10, color: '#bbb', textAlign: 'center', letterSpacing: '0.07em' }}>
-        WALK AWAY TO CLOSE
-      </p>
-    </div>
-  </Html>
-)}
-</RigidBody>
-      {/* <Leaves position={[231.84, 198.625, 22.233]} scale={600} /> */}
-      <mesh geometry={nodes.trees.geometry} position={[-341.939, 184.638, -316.289]} rotation={[-Math.PI, 0.652, -Math.PI]} scale={[7.07, 9.673, 6.057]} ><meshBasicMaterial map={trees}/></mesh>
-       {/* <Leaves  position={[-341.939, 194.638, -316.289]}  scale={600} />  
-        <Leaves  position={[-330.939, 200.638, -280.289]}  scale={600} />     */}
-      <mesh geometry={nodes.configurator004.geometry}  position={[-225.776, 150.879, 86.279]} scale={4.676} ><meshBasicMaterial map={config}/></mesh>
-      <mesh geometry={nodes.configurator001.geometry}  position={[-272.177, 151.619, 84.197]} scale={4.676} ><meshBasicMaterial map={config}/></mesh>
-      <mesh geometry={nodes.configurator002.geometry}  position={[-311.63, 152.42, 73.967]} rotation={[0, -0.753, 0]} scale={4.676} ><meshBasicMaterial map={config}/></mesh>
-      <RigidBody colliders='cuboid'  position={[-222.463, 156.446, 259.231]}>
-      <mesh geometry={nodes.Plane009.geometry}  scale={[151.462, 76.548, 87.458]} ><meshBasicMaterial map={turf}/></mesh>
+    
       </RigidBody>
+
+      <mesh geometry={nodes.trees.geometry} position={[-341.939, 184.638, -316.289]} rotation={[-Math.PI, 0.652, -Math.PI]} scale={[7.07, 9.673, 6.057]}><meshBasicMaterial map={trees} /></mesh>
+      <mesh geometry={nodes.configurator004.geometry} position={[-225.776, 150.879, 86.279]} scale={4.676}><meshBasicMaterial map={config} /></mesh>
+      <mesh geometry={nodes.configurator001.geometry} position={[-272.177, 151.619, 84.197]} scale={4.676}><meshBasicMaterial map={config} /></mesh>
+      <mesh geometry={nodes.configurator002.geometry} position={[-311.63, 152.42, 73.967]} rotation={[0, -0.753, 0]} scale={4.676}><meshBasicMaterial map={config} /></mesh>
+
+      <RigidBody colliders='cuboid' position={[-222.463, 156.446, 259.231]}>
+        <mesh geometry={nodes.Plane009.geometry} scale={[151.462, 76.548, 87.458]}><meshBasicMaterial map={turf} /></mesh>
+      </RigidBody>
+
       <mesh geometry={nodes.Books.geometry} material={nodes.Books.material} position={[-251.178, 170.746, -73.334]} rotation={[-0.003, -0.044, 0.008]} scale={19.551} />
       <mesh geometry={nodes.chair.geometry} material={nodes.chair.material} position={[-260.011, 160.858, -67.147]} rotation={[-Math.PI, 0.118, -Math.PI]} scale={13.325} />
       <mesh geometry={nodes.charger.geometry} material={nodes.charger.material} position={[-270.448, 161.349, -76.165]} scale={[0.459, 0.459, 1.32]} />
@@ -339,44 +344,44 @@ useEffect(() => {
       <mesh geometry={nodes.photoframe1001.geometry} material={nodes.photoframe1001.material} position={[-268.047, 186.371, -81.896]} rotation={[1.611, 0, 0]} scale={[1.2, 1.002, 1.811]} />
       <mesh geometry={nodes.Plane.geometry} material={nodes.Plane.material} position={[-273.292, 163.598, -82.949]} rotation={[1.686, 0, 0]} scale={[1.663, 1.676, 2.473]} />
       <mesh geometry={nodes.Plane001.geometry} material={nodes.Plane001.material} position={[-261.334, 193.672, -82.828]} rotation={[1.563, 0, 0]} scale={[11.262, 1, 0.479]} />
-      
       <mesh geometry={nodes.plant.geometry} material={nodes.plant.material} position={[-278.21, 169.238, -76.083]} rotation={[-Math.PI, 0, 0]} scale={[-0.239, -6.741, -0.26]} />
+
       <RigidBody type='fixed' colliders='cuboid' position={[-261.044, 156.479, -66.5]}>
-      <mesh geometry={nodes.Room.geometry} material={nodes.Room.material}  scale={[20.806, 20.082, 19.476]} />
+        <mesh geometry={nodes.Room.geometry} material={nodes.Room.material} scale={[20.806, 20.082, 19.476]} />
       </RigidBody>
+
       <mesh geometry={nodes['slippers&mouse'].geometry} material={nodes['slippers&mouse'].material} position={[-263.786, 161.441, -75.547]} rotation={[0, 0.803, -3.132]} scale={[-1.764, -0.152, -0.926]} />
       <mesh geometry={nodes.table.geometry} material={nodes.table.material} position={[-259.667, 169.474, -75.611]} />
       <mesh geometry={nodes.Text.geometry} material={nodes.Text.material} position={[-242.209, 179.164, -70.449]} rotation={[Math.PI / 2, 0, Math.PI / 2]} scale={[2.776, 2.161, 2.72]} />
       <mesh geometry={nodes.windowsides.geometry} material={nodes.windowsides.material} position={[-241.566, 191.878, -72.789]} scale={[1, 1.038, 0.709]} />
       <mesh geometry={nodes.woodfloor.geometry} material={nodes.woodfloor.material} position={[-262.176, 159.97, -64.757]} scale={[-19.196, -16.889, -17.745]} />
+
       <object3D ref={targetRef} position={[14.916, 160.81, 103.695]} />
       <spotLight
         ref={lightRef}
-        position={[14.916, 215, 103.695]} 
-        target={targetRef.current}          
+        position={[14.916, 215, 103.695]}
+        target={targetRef.current}
         color="blue"
         intensity={50000}
-        angle={Math.PI / 4}                  
+        angle={Math.PI / 4}
         penumbra={0.4}
         distance={60}
         decay={2}
       />
 
-      <mesh geometry={nodes.Plane003.geometry} position={[14.916, 150.81, 103.695]} scale={5.01}>
-        <meshBasicMaterial map={rsl}/>
-      </mesh>
-      <mesh geometry={nodes.Plane005.geometry}  position={[-362.638, 150.81, -25.619]} scale={5.01} ><meshBasicMaterial map={sl}/></mesh>
-      <mesh geometry={nodes.chair003.geometry} material={nodes.chair003.material} position={[-363.623, 152.367, -117.21]} rotation={[0, 0, -Math.PI]} scale={[-1.045, -3.485, -2.643]} ><meshBasicMaterial map={chair003}/></mesh>
+      <mesh geometry={nodes.Plane003.geometry} position={[14.916, 150.81, 103.695]} scale={5.01}><meshBasicMaterial map={rsl} /></mesh>
+      <mesh geometry={nodes.Plane005.geometry} position={[-362.638, 150.81, -25.619]} scale={5.01}><meshBasicMaterial map={sl} /></mesh>
+      <mesh geometry={nodes.chair003.geometry} material={nodes.chair003.material} position={[-363.623, 152.367, -117.21]} rotation={[0, 0, -Math.PI]} scale={[-1.045, -3.485, -2.643]}><meshBasicMaterial map={chair003} /></mesh>
       <mesh geometry={nodes.chair004.geometry} material={nodes.chair004.material} position={[-129.074, 152.367, -140.727]} rotation={[-Math.PI, 0, 0]} scale={[-1.045, -3.485, -2.643]} />
-      <mesh geometry={nodes.chair007.geometry} position={[-290.086, 152.367, -259.193]} rotation={[0, -1.282, -Math.PI]} scale={[-1.772, -3.485, -2.643]} ><meshBasicMaterial map={fence002}/></mesh>
-      <mesh geometry={nodes.chair005.geometry}  position={[-92.142, 152.367, -259.193]} rotation={[0, -1.282, -Math.PI]} scale={[-1.772, -3.485, -2.643]} ><meshBasicMaterial map={fence003}/></mesh>
-      <mesh geometry={nodes.chair006.geometry}  position={[-329.041, 152.367, 119.256]} rotation={[Math.PI, -1.369, 0]} scale={[-1.772, -3.485, -2.643]} ><meshBasicMaterial map={fence004}/></mesh>
-      <mesh geometry={nodes.chair008.geometry}  position={[-52.932, 152.367, 125.507]} rotation={[0, -1.003, -Math.PI]} scale={[-1.772, -3.485, -2.643]} ><meshBasicMaterial map={fence004}/></mesh>
-      <mesh geometry={nodes.chair001.geometry} material={nodes.chair001.material} position={[-363.623, 152.367, -58.6]} rotation={[0, 0, -Math.PI]} scale={[-1.045, -3.485, -2.643]} ><meshBasicMaterial map={chair001}/></mesh>
+      <mesh geometry={nodes.chair007.geometry} position={[-290.086, 152.367, -259.193]} rotation={[0, -1.282, -Math.PI]} scale={[-1.772, -3.485, -2.643]}><meshBasicMaterial map={fence002} /></mesh>
+      <mesh geometry={nodes.chair005.geometry} position={[-92.142, 152.367, -259.193]} rotation={[0, -1.282, -Math.PI]} scale={[-1.772, -3.485, -2.643]}><meshBasicMaterial map={fence003} /></mesh>
+      <mesh geometry={nodes.chair006.geometry} position={[-329.041, 152.367, 119.256]} rotation={[Math.PI, -1.369, 0]} scale={[-1.772, -3.485, -2.643]}><meshBasicMaterial map={fence004} /></mesh>
+      <mesh geometry={nodes.chair008.geometry} position={[-52.932, 152.367, 125.507]} rotation={[0, -1.003, -Math.PI]} scale={[-1.772, -3.485, -2.643]}><meshBasicMaterial map={fence004} /></mesh>
+      <mesh geometry={nodes.chair001.geometry} material={nodes.chair001.material} position={[-363.623, 152.367, -58.6]} rotation={[0, 0, -Math.PI]} scale={[-1.045, -3.485, -2.643]}><meshBasicMaterial map={chair001} /></mesh>
       <mesh geometry={nodes.chair002.geometry} material={nodes.chair002.material} position={[-129.074, 152.367, -82.366]} rotation={[-Math.PI, 0, 0]} scale={[-1.045, -3.485, -2.643]} />
-      <mesh geometry={nodes.Plane010.geometry}  position={[-362.638, 150.81, -188.257]} scale={5.01} ><meshBasicMaterial map={sl}/></mesh>
-      <mesh geometry={nodes.Plane002.geometry}  position={[-135.827, 150.81, -187.37]} scale={5.01} ><meshBasicMaterial map={sl}/></mesh>
-      <mesh geometry={nodes.Plane004.geometry}  position={[-132.459, 150.81, -27.12]} scale={5.01} ><meshBasicMaterial map={sl}/></mesh>
+      <mesh geometry={nodes.Plane010.geometry} position={[-362.638, 150.81, -188.257]} scale={5.01}><meshBasicMaterial map={sl} /></mesh>
+      <mesh geometry={nodes.Plane002.geometry} position={[-135.827, 150.81, -187.37]} scale={5.01}><meshBasicMaterial map={sl} /></mesh>
+      <mesh geometry={nodes.Plane004.geometry} position={[-132.459, 150.81, -27.12]} scale={5.01}><meshBasicMaterial map={sl} /></mesh>
     </group>
   )
 })
