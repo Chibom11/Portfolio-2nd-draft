@@ -24,7 +24,7 @@ function LinkedInGlow() {
   })
 
   return (
-    <mesh position={[-10, 40, -8]} rotation={[-Math.PI / 2, 0, 0]}>
+    <mesh position={[-8, 30, -8]} rotation={[-Math.PI / 2, 0, 0]}>
       <circleGeometry args={[20, 64]} />
       <shaderMaterial
         ref={matRef}

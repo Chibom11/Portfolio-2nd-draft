@@ -35,6 +35,7 @@ function Experience() {
   const controls = useRef()
   const characterRb = useRef()        
   const [isNight, setIsNight] = useState(false)
+  const [playfall,setPlayFall]=useState(false)
  const [lkd,setLkd]=useState(false)
 const linkedinRef = useRef()
  
@@ -55,11 +56,19 @@ const linkedinRef = useRef()
 
        const dist=characterPos.distanceTo(linkedinPos);
 
-       if(dist<30){
+       if(dist<70){
         setLkd(true);
+        if(dist<50){
+          setLkd(true);
+         setPlayFall(true);
+        }else{
+          setLkd(true);
+         setPlayFall(false)
+        }
+        
        }else{
        setLkd(false);}
-       
+
     }
 
     // Offset the camera behind/above the character
@@ -118,7 +127,7 @@ useEffect(()=>{console.log("Lkd",lkd)},[lkd])
 
           {/* Pass the ref down */}
           {/* <Character ref={characterRb} /> */}
-          <Miles ref={characterRb} />
+          <Miles ref={characterRb} playfall={playfall} setPlayFall={setPlayFall}/>
           {/* <Spiderman  ref={characterRb}/> */}
 
     

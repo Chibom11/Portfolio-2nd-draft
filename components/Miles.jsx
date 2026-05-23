@@ -7,7 +7,7 @@ import * as THREE from 'three'
 
 export const Miles = forwardRef((props, rbRef) => {
   const group = React.useRef()
-  const { scene, animations } = useGLTF('/model/miles.glb')
+  const { scene, animations } = useGLTF('/model/mup.glb')
   const clone = React.useMemo(() => SkeletonUtils.clone(scene), [scene])
   const { nodes, materials } = useGraph(clone)
   const { actions } = useAnimations(animations, group)
@@ -105,6 +105,18 @@ console.log(actions)
     return ()=> document.removeEventListener('keydown',handleKeyQDown)
   },[actions])
 
+  useEffect(()=>{
+    if(props.playfall===true && !isFlipping.current){
+      isFlipping.current=true;
+
+      playAnim('pulled');
+        const duration=(actions['pulled']?._clip.duration ?? 1)*1000;
+        setTimeout(()=>{
+          isFlipping.current=false;
+        },duration)
+    }
+  },[props.playfall,actions])
+
   return (
   
 <RigidBody colliders={false} position={[4, 20, 0]} lockRotations ref={rbRef}>
@@ -141,4 +153,4 @@ console.log(actions)
   )
 })
 
-useGLTF.preload('/model/miles.glb')
+useGLTF.preload('/model/mup.glb')
