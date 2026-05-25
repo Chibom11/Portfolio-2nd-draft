@@ -4,6 +4,7 @@ import { useGLTF, useAnimations, useKeyboardControls } from '@react-three/drei'
 import { SkeletonUtils } from 'three-stdlib'
 import { CuboidCollider, RigidBody } from '@react-three/rapier'
 import * as THREE from 'three'
+import { VFXEmitter, VFXParticles } from 'wawa-vfx'
 
 export const Miles = forwardRef((props, rbRef) => {
   const group = React.useRef()
@@ -118,8 +119,9 @@ console.log(actions)
 }, [props.playfall, actions])
 
   return (
+  <>
   
-<RigidBody colliders={false} position={[4, 20, 0]} lockRotations ref={rbRef}>
+<RigidBody colliders={false} position={[-90, 20, 180]} lockRotations ref={rbRef}>
    
       <CuboidCollider args={[3, 14, 5]} position={[0, 14, 0]} />
 
@@ -150,6 +152,8 @@ console.log(actions)
         </group>
       </group>
     </RigidBody>
+
+    </>
   )
 })
 

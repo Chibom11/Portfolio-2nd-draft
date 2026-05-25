@@ -116,7 +116,7 @@ function LinkedInGlow() {
     </mesh>
   )
 }
-export const Model = forwardRef((props, linkedinRef) => {
+export const Model = ({ linkedinRef, theatreRef, ...props }) => {
   const { nodes, materials } = useGLTF('/model/mo.glb')
   const lightRef = useRef()
   const targetRef = useRef()
@@ -285,8 +285,8 @@ export const Model = forwardRef((props, linkedinRef) => {
         <mesh geometry={nodes.Text001.geometry} scale={[64.628, 56.461, 51.37]}><meshBasicMaterial map={name} /></mesh>
       </RigidBody>
 
-      <RigidBody type='fixed' colliders={false} position={[194.315, 163.656, 281.801]} rotation={[0, 1.562, 1.571]}>
-        <mesh geometry={nodes.projector_screen.geometry} scale={[-27.516, -65.159, -27.516]}><meshBasicMaterial map={proj} /></mesh>
+      <RigidBody  type='fixed' colliders={false} position={[194.315, 163.656, 281.801]} rotation={[0, 1.562, 1.571]}>
+        <mesh ref={theatreRef} geometry={nodes.projector_screen.geometry} scale={[-27.516, -65.159, -27.516]}><meshBasicMaterial map={proj} /></mesh>
         <CuboidCollider args={[20, 20, 3]} position={[10, 1, 0]} />
       </RigidBody>
 
@@ -384,6 +384,6 @@ export const Model = forwardRef((props, linkedinRef) => {
       <mesh geometry={nodes.Plane004.geometry} position={[-132.459, 150.81, -27.12]} scale={5.01}><meshBasicMaterial map={sl} /></mesh>
     </group>
   )
-})
+}
 
 useGLTF.preload('/model/mo.glb')

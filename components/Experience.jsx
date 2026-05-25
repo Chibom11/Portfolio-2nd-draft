@@ -25,10 +25,11 @@ import Leaves from './Leaves.jsx'
 import { degToRad } from 'three/src/math/MathUtils.js'
 import { Html } from '@react-three/drei'  
 import {Spiderman} from './Spiderman.jsx'
-
-
-
 import { useFrame } from '@react-three/fiber'
+
+import { VFXEmitter, VFXParticles } from 'wawa-vfx';
+
+
 
 
 function Experience() {
@@ -37,12 +38,14 @@ function Experience() {
   const [isNight, setIsNight] = useState(false)
   const [playfall,setPlayFall]=useState(false)
  const [lkd,setLkd]=useState(false)
+ const [theatreView,setTheatreView]=useState(true)
 const linkedinRef = useRef()
- 
+ const theatreControls=useRef()
+ const theatreRef = useRef() 
 
   // // Follow character every frame
   useFrame(() => {
-    if (!controls.current || !characterRb.current) return
+    if (!controls.current || !characterRb.current || theatreView) return
 
     // Get world position from the RigidBody
     const pos = characterRb.current.translation()  // rapier gives {x,y,z}
@@ -83,14 +86,29 @@ const linkedinRef = useRef()
     )
   })
 
-useEffect(()=>{console.log("Lkd",lkd)},[lkd])
+
+  useFrame(()=>{
+    if(!theatreRef.current || !theatreView) return;
+
+    const theatrePos=new THREE.Vector3();
+    theatreRef.current.getWorldPosition(theatrePos);
+
+     theatreControls.current.setLookAt(
+      theatrePos.x-60,        theatrePos.y + 20,  theatrePos.z + 120, 
+      theatrePos.x,        theatrePos.y + 5,  theatrePos.z,      
+      true                                     
+    )
+
+
+  })
 
 
   return (
     <>
+  
       <Perf />
       <OrbitControls/>
-      
+
      
       {/* <fogExp2 attach="fog" color="#7b4f8a" density={0.0004} /> */}
       <ambientLight color="purple" intensity={2.3} />
@@ -114,12 +132,22 @@ useEffect(()=>{console.log("Lkd",lkd)},[lkd])
    
       />
 
+      {theatreView && <CameraControls
+        ref={theatreControls}
+        minDistance={0.001}
+        maxDistance={20}
+        smoothTime={0.25}          
+        draggingSmoothTime={0.1}
+   
+      />
+}
       <Physics  gravity={[0,-80,0]}>
         <Selection>
-    
+
 
 <Model
-  ref={linkedinRef}
+  linkedinRef={linkedinRef}
+  theatreRef={theatreRef}
   scale={0.8}
   position={[0, -124.5, -16]}
   rotation={[0, Math.PI / 3, 0]}
