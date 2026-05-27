@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Movie Carousel</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  width: 100%;
+  height: 420px;
+  overflow: hidden;
+  background: #141414;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+.wrap {
+  width: 880px;
+  height: 420px;
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+}
+
+.slides-track {
+  display: flex;
+  height: 420px;
+  transition: transform 0.55s cubic-bezier(0.77,0,0.18,1);
+}
+
+.slide {
+  min-width: 880px;
+  height: 420px;
+  position: relative;
+  display: flex;
+  align-items: stretch;
+}
+
+/* ── Hero backdrop ── */
+.backdrop {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center top;
+}
+.backdrop-td {
+  background: linear-gradient(115deg,
+    #000000 0%, #0d0200 12%, #3a0800 28%,
+    #7a1200 44%, #c42a10 58%, #e84e1a 72%,
+    #f47c20 85%, #faa030 100%);
+}
+.backdrop-wh {
+  background: linear-gradient(115deg,
+    #000000 0%, #010208 12%, #04082a 28%,
+    #081244 44%, #0f1e72 58%, #1a30a8 72%,
+    #2848d8 85%, #4060ff 100%);
+}
+.backdrop::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right,
+    rgba(10,10,10,1.0) 0%,
+    rgba(10,10,10,0.92) 25%,
+    rgba(10,10,10,0.55) 50%,
+    rgba(10,10,10,0.10) 72%,
+    rgba(10,10,10,0.0) 100%);
+}
+
+/* ── Content panel ── */
+.content {
+  position: relative;
+  z-index: 2;
+  padding: 36px 44px;
+  width: 530px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0;
+}
+
+/* ── Poster art on right ── */
+.poster-col {
+  position: relative;
+  z-index: 2;
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 28px;
+  margin-bottom: 60px;
+  flex-shrink: 0;
+}
+.poster-card {
+  width: 310px;
+  height: 350px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid rgba(255,255,255,0.18);
+  position: relative;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.85), 0 0 40px rgba(0,0,0,0.5);
+}
+.poster-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* ── Text styles ── */
+.genre-row {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+.genre-tag {
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.5);
+  border: 0.5px solid rgba(255,255,255,0.25);
+  padding: 3px 8px;
+  border-radius: 2px;
+}
+
+.title-block {
+  margin-bottom: 8px;
+}
+.film-title {
+  font-size: 38px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+.film-title-td { color: #fff; text-shadow: 0 0 40px rgba(230,80,20,0.4); }
+.film-title-wh { color: #fff; text-shadow: 0 0 40px rgba(60,100,255,0.4); }
+
+.meta-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.meta-year {
+  font-size: 13px;
+  font-weight: 700;
+  color: #46d369;
+}
+.meta-dot { font-size: 10px; color: rgba(255,255,255,0.3); }
+.meta-info {
+  font-size: 12px;
+  color: rgba(255,255,255,0.5);
+  letter-spacing: 0.04em;
+}
+.match-badge {
+  font-size: 11px;
+  font-weight: 700;
+  color: #46d369;
+  border: 1.5px solid #46d369;
+  padding: 1px 6px;
+  border-radius: 2px;
+  letter-spacing: 0.05em;
+}
+
+.synopsis {
+  font-size: 12.5px;
+  line-height: 1.65;
+  color: rgba(255,255,255,0.72);
+  margin-bottom: 18px;
+  max-width: 390px;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.btn-row {
+  display: flex;
+  gap: 8px;
+}
+.btn-play {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: #fff;
+  color: #000;
+  border: none;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 8px 18px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.btn-play:hover { background: rgba(255,255,255,0.85); }
+.btn-play svg { width: 16px; height: 16px; fill: #000; flex-shrink: 0; }
+
+.btn-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: rgba(109,109,110,0.7);
+  color: #fff;
+  border: none;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 8px 18px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.btn-more:hover { background: rgba(109,109,110,0.9); }
+.btn-more svg { width: 16px; height: 16px; fill: #fff; flex-shrink: 0; }
+
+/* ── Nav ── */
+.nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,0.35);
+  background: rgba(20,20,20,0.7);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, border-color 0.15s;
+  font-size: 18px;
+  line-height: 1;
+}
+.nav-btn:hover { background: rgba(20,20,20,0.92); border-color: #fff; }
+.nav-prev { left: 8px; }
+.nav-next { right: 8px; }
+
+/* ── Dots ── */
+.dots {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: flex;
+  gap: 6px;
+}
+.dot {
+  width: 22px;
+  height: 3px;
+  border-radius: 1.5px;
+  background: rgba(255,255,255,0.25);
+  cursor: pointer;
+  transition: background 0.2s, width 0.2s;
+}
+.dot.active { background: #e50914; width: 32px; }
+
+/* ══════════════════════════════════════
+   CINEMATIC POST-PROCESSING OVERLAYS
+   ══════════════════════════════════════ */
+
+/* Vignette */
+#vignette {
+  position: fixed; inset: 0; z-index: 100; pointer-events: none;
+  background: radial-gradient(ellipse at 50% 50%,
+    transparent 42%, rgba(0,0,0,0.32) 68%,
+    rgba(0,0,0,0.68) 88%, rgba(0,0,0,0.86) 100%);
+}
+
+/* Scanlines */
+#scanlines {
+  position: fixed; inset: 0; z-index: 101; pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0,0,0,0.055) 0px, rgba(0,0,0,0.055) 1px,
+    transparent 1px, transparent 3px
+  );
+}
+
+/* Chromatic aberration via SVG filter on wrap */
+.wrap { filter: url(#ca-filter); }
+
+/* Bloom canvas — screen blend over everything */
+#bloom-canvas {
+  position: fixed; inset: 0; z-index: 99;
+  pointer-events: none; mix-blend-mode: screen; opacity: 0.5;
+}
+
+/* Film grain */
+#grain-canvas {
+  position: fixed; inset: 0; z-index: 102;
+  pointer-events: none; mix-blend-mode: overlay; opacity: 0.15;
+}
+
+/* Subtle projector flicker */
+@keyframes flicker {
+  0%,100% { opacity: 1; }
+  49%     { opacity: 0.984; }
+  50%     { opacity: 0.971; }
+  51%     { opacity: 0.988; }
+  77%     { opacity: 0.979; }
+  78%     { opacity: 1; }
+}
+.wrap { animation: flicker 6.1s infinite linear; }
+
+/* ── Popup ── */
+.overlay {
+  display: none;
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.88);
+  z-index: 20;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(6px);
+}
+.overlay.open { display: flex; }
+.popup {
+  background: #1f1f1f;
+  border: 0.5px solid rgba(255,255,255,0.12);
+  border-radius: 8px;
+  padding: 28px;
+  width: 380px;
+  position: relative;
+}
+.popup-close {
+  position: absolute;
+  top: 12px; right: 14px;
+  background: none; border: none;
+  color: rgba(255,255,255,0.4);
+  font-size: 20px;
+  cursor: pointer;
+  line-height: 1;
+  transition: color 0.15s;
+}
+.popup-close:hover { color: #fff; }
+.popup-label {
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+  margin-bottom: 4px;
+}
+.popup-movie-name {
+  font-size: 20px;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 14px;
+  letter-spacing: -0.02em;
+}
+.popup-divider {
+  height: 1px;
+  background: rgba(255,255,255,0.1);
+  margin-bottom: 14px;
+}
+.popup-text {
+  font-size: 12.5px;
+  line-height: 1.7;
+  color: rgba(255,255,255,0.68);
+}
+.popup-text p { margin-bottom: 10px; }
+.popup-text p:last-child { margin-bottom: 0; }
+</style>
+</head>
+<body>
+
+<!-- SVG filter for chromatic aberration -->
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <filter id="ca-filter" x="-2%" y="-2%" width="104%" height="104%" color-interpolation-filters="sRGB">
+      <!-- shift R channel left, B channel right -->
+      <feColorMatrix type="matrix" values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="r"/>
+      <feOffset in="r" dx="-1.4" dy="0" result="r-shift"/>
+      <feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0" result="g"/>
+      <feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="b"/>
+      <feOffset in="b" dx="1.4" dy="0" result="b-shift"/>
+      <feBlend in="r-shift" in2="g" mode="screen" result="rg"/>
+      <feBlend in="rg" in2="b-shift" mode="screen"/>
+    </filter>
+  </defs>
+</svg>
+
+<!-- Cinematic overlays -->
+<canvas id="bloom-canvas"></canvas>
+<canvas id="grain-canvas"></canvas>
+<div id="vignette"></div>
+<div id="scanlines"></div>
+
+<div class="wrap">
+
+  <div class="slides-track" id="track">
+
+    <!-- SLIDE 1: Taxi Driver -->
+    <div class="slide">
+      <div class="backdrop backdrop-td"></div>
+      <div class="content">
+        <div class="genre-row">
+          <span class="genre-tag">Crime</span>
+          <span class="genre-tag">Drama</span>
+          <span class="genre-tag">Neo-Noir</span>
+        </div>
+        <div class="title-block">
+          <div class="film-title film-title-td">Taxi Driver</div>
+        </div>
+        <div class="meta-row">
+          <span class="meta-year">1976</span>
+          <span class="meta-dot">•</span>
+          <span class="meta-info">114 min</span>
+          <span class="meta-dot">•</span>
+          <span class="meta-info">Scorsese · De Niro</span>
+          <span class="match-badge">97%</span>
+        </div>
+        <p class="synopsis">Travis Bickle is a sleepless Vietnam vet drifting through New York's nocturnal underbelly behind a cab's wheel. The city festers around him — pimps, junkies, violence — and Travis, isolated and unraveling, becomes convinced he must do something.</p>
+        <div class="btn-row">
+          <button class="btn-play">
+            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            Play
+          </button>
+          <button class="btn-more" onclick="openPopup('td')">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+            My Thoughts
+          </button>
+        </div>
+      </div>
+      <div class="poster-col">
+        <div class="poster-card">
+          <img src="/images/taxidriver.jpeg" alt="Taxi Driver poster" />
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 2: Whiplash -->
+    <div class="slide">
+      <div class="backdrop backdrop-wh"></div>
+      <div class="content">
+        <div class="genre-row">
+          <span class="genre-tag">Drama</span>
+          <span class="genre-tag">Music</span>
+          <span class="genre-tag">Psychological</span>
+        </div>
+        <div class="title-block">
+          <div class="film-title film-title-wh">Whiplash</div>
+        </div>
+        <div class="meta-row">
+          <span class="meta-year">2014</span>
+          <span class="meta-dot">•</span>
+          <span class="meta-info">107 min</span>
+          <span class="meta-dot">•</span>
+          <span class="meta-info">Chazelle · Teller · Simmons</span>
+          <span class="match-badge">98%</span>
+        </div>
+        <p class="synopsis">Andrew Neiman arrives at a conservatory consumed by a single ambition — to be the next Buddy Rich. What he finds is Fletcher, a conductor who believes the two most harmful words are "good job." A pressure cooker of jazz and psychological warfare.</p>
+        <div class="btn-row">
+          <button class="btn-play">
+            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            Play
+          </button>
+          <button class="btn-more" onclick="openPopup('wh')">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+            My Thoughts
+          </button>
+        </div>
+      </div>
+      <div class="poster-col">
+        <div class="poster-card">
+          <img src="/images/whiplash.jpeg" alt="Whiplash poster" />
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Nav arrows -->
+  <button class="nav-btn nav-prev" onclick="move(-1)">&#8592;</button>
+  <button class="nav-btn nav-next" onclick="move(1)">&#8594;</button>
+
+  <!-- Dots -->
+  <div class="dots">
+    <div class="dot active" onclick="goto(0)"></div>
+    <div class="dot" onclick="goto(1)"></div>
+  </div>
+
+  <!-- Popup overlay -->
+  <div class="overlay" id="overlay" onclick="closeOutside(event)">
+    <div class="popup" id="popup">
+      <button class="popup-close" onclick="closePopup()">&#10005;</button>
+      <div class="popup-label">My thoughts on</div>
+      <div class="popup-movie-name" id="popup-name"></div>
+      <div class="popup-divider"></div>
+      <div class="popup-text" id="popup-body"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+var cur = 0;
+var thoughts = {
+  td: {
+    name: 'Taxi Driver',
+    html: '<p>There\'s a reason this film never leaves you. Scorsese and Schrader created something at the intersection of American loneliness and American violence — and they didn\'t flinch. Travis isn\'t a hero or a villain, he\'s a mirror pointed at a society that produces men like him and then acts surprised.</p><p>De Niro\'s performance is method acting at its most unnerving. The quiet moments — Travis writing in his diary, watching trash from his cab — are where the film truly lives.</p><p>What haunts me most is the ending. The press treats a massacre as heroism. Scorsese doesn\'t editorialize. He just shows it, and lets the discomfort sit with you.</p>'
+  },
+  wh: {
+    name: 'Whiplash',
+    html: '<p>Chazelle made a film about music that feels like a thriller. Every drum solo has the tension of a heist. That\'s insane craft.</p><p>The film genuinely unsettled me because I found myself rooting for Fletcher\'s methods to work — and then catching myself doing it. That\'s the trap it lays. You feel triumph and horror simultaneously by the final solo.</p><p>J.K. Simmons deserved every award he won. Fletcher is terrifying not because he\'s cartoonish but because his logic partially makes sense. That\'s far scarier than a simple monster.</p>'
+  }
+};
+function goto(idx) {
+  cur = idx;
+  document.getElementById('track').style.transform = 'translateX(-' + (idx * 880) + 'px)';
+  document.querySelectorAll('.dot').forEach(function(d, i) { d.classList.toggle('active', i === idx); });
+}
+function move(dir) { goto((cur + dir + 2) % 2); }
+function openPopup(key) {
+  var d = thoughts[key];
+  document.getElementById('popup-name').textContent = d.name;
+  document.getElementById('popup-body').innerHTML = d.html;
+  document.getElementById('overlay').classList.add('open');
+}
+function closePopup() { document.getElementById('overlay').classList.remove('open'); }
+
+
+/* ─── CINEMATIC POST-PROCESSING JS ─── */
+(function() {
+  var W = 880, H = 420;
+
+  /* ── FILM GRAIN ── */
+  var grainCanvas = document.getElementById('grain-canvas');
+  grainCanvas.width = W; grainCanvas.height = H;
+  var gctx = grainCanvas.getContext('2d');
+
+  function drawGrain() {
+    var img = gctx.createImageData(W, H);
+    var d = img.data;
+    for (var i = 0; i < d.length; i += 4) {
+      var v = (Math.random() * 255) | 0;
+      d[i] = v; d[i+1] = v; d[i+2] = v; d[i+3] = 255;
+    }
+    gctx.putImageData(img, 0, 0);
+  }
+  // Refresh grain every 2 frames for organic film feel
+  var grainFrame = 0;
+  function grainLoop() {
+    grainFrame++;
+    if (grainFrame % 2 === 0) drawGrain();
+    requestAnimationFrame(grainLoop);
+  }
+  drawGrain();
+  grainLoop();
+
+  /* ── BLOOM GLOW ── */
+  var bloomCanvas = document.getElementById('bloom-canvas');
+  bloomCanvas.width = W; bloomCanvas.height = H;
+  var bctx = bloomCanvas.getContext('2d');
+
+  function drawBloom() {
+    bctx.clearRect(0, 0, W, H);
+    // Radial glow from center-right where bright content lives
+    var g1 = bctx.createRadialGradient(W*0.62, H*0.5, 0, W*0.62, H*0.5, W*0.55);
+    g1.addColorStop(0,   'rgba(255,200,140,0.18)');
+    g1.addColorStop(0.4, 'rgba(255,160, 80,0.08)');
+    g1.addColorStop(1,   'rgba(0,0,0,0)');
+    bctx.fillStyle = g1;
+    bctx.fillRect(0, 0, W, H);
+
+    // Secondary glow from top of bright area
+    var g2 = bctx.createRadialGradient(W*0.5, 0, 0, W*0.5, 0, H*0.8);
+    g2.addColorStop(0,   'rgba(200,220,255,0.10)');
+    g2.addColorStop(1,   'rgba(0,0,0,0)');
+    bctx.fillStyle = g2;
+    bctx.fillRect(0, 0, W, H);
+  }
+  drawBloom();
+})();
+
+function closeOutside(e) { if (e.target === document.getElementById('overlay')) closePopup(); }
+</script>
+</body>
+</html>

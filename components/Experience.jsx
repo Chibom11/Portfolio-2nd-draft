@@ -107,7 +107,7 @@ const linkedinRef = useRef()
     <>
   
       <Perf />
-      <OrbitControls/>
+      {/* <OrbitControls/> */}
 
      
       {/* <fogExp2 attach="fog" color="#7b4f8a" density={0.0004} /> */}
@@ -154,6 +154,8 @@ const linkedinRef = useRef()
   isNight={isNight}
   setIsNight={setIsNight}
   showLinkedin={lkd}
+  theatreView={theatreView}
+  setTheatreView={setTheatreView}
 />
 
           {/* Pass the ref down */}
