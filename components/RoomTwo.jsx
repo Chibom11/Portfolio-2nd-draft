@@ -281,8 +281,7 @@ export const Model = ({ linkedinRef, theatreRef, ...props }) => {
       <RigidBody type='fixed' colliders="trimesh" position={[-222.044, 168.092, 260.742]}>
         <mesh geometry={nodes.turf.geometry} rotation={[-Math.PI / 2, 0, 0]} scale={[152.069, 4.788, 4.455]}><meshBasicMaterial map={nonturf} /></mesh>
       </RigidBody>
-{props.theatreView && <><CinemaPostProcessing />
-<CinemaScreen proj={proj} theatreView={props.theatreView} nodes={nodes} /></>}
+
 
       <RigidBody type='fixed' colliders='cuboid' position={[150.796, 152.086, -232.975]} rotation={[1.578, -0.036, 1.032]}>
         <mesh geometry={nodes.Text001.geometry} scale={[64.628, 56.461, 51.37]}><meshBasicMaterial map={name} /></mesh>
@@ -292,7 +291,8 @@ export const Model = ({ linkedinRef, theatreRef, ...props }) => {
         <mesh ref={theatreRef} geometry={nodes.projector_screen.geometry} scale={[-27.516, -65.159, -26.516]}><meshBasicMaterial map={proj} /></mesh>
         <CuboidCollider args={[20, 20, 3]} position={[10, 1, 0]} />
       </RigidBody>
-
+      //Projector Screen IFrame
+      <CinemaScreen proj={proj} theatreView={props.theatreView} nodes={nodes} />
 
       <RigidBody type='fixed' colliders='trimesh' position={[89.267, 159.587, 279.353]} rotation={[-2.923, 1.53, -1.788]}>
         <mesh geometry={nodes.couch.geometry} scale={8.798}><meshBasicMaterial map={couch} /></mesh>

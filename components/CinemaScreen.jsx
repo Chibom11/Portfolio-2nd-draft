@@ -124,7 +124,7 @@ export function CinemaScreen({ proj, theatreView, nodes }) {
           occlude
           position={[192.62, 205.8, 282]}
           rotation={[0, -1.572, -0.001]}
-          scale={5.9}
+          scale={6.2}
         >
           {/*
             Wrapper adds:

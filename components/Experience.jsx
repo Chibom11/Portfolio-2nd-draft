@@ -28,6 +28,7 @@ import {Spiderman} from './Spiderman.jsx'
 import { useFrame } from '@react-three/fiber'
 
 import { VFXEmitter, VFXParticles } from 'wawa-vfx';
+import { MusicPlayer } from './MusicPlayer.jsx'
 
 
 
@@ -38,78 +39,89 @@ function Experience() {
   const [isNight, setIsNight] = useState(false)
   const [playfall,setPlayFall]=useState(false)
  const [lkd,setLkd]=useState(false)
- const [theatreView,setTheatreView]=useState(true)
+ const [theatreView,setTheatreView]=useState(false)
 const linkedinRef = useRef()
  const theatreControls=useRef()
  const theatreRef = useRef() 
 
   // // Follow character every frame
-  useFrame(() => {
-    if (!controls.current || !characterRb.current || theatreView) return
+  // useFrame(() => {
+  //   if (!controls.current || !characterRb.current || theatreView) return
 
-    // Get world position from the RigidBody
-    const pos = characterRb.current.translation()  // rapier gives {x,y,z}
+  //   // Get world position from the RigidBody
+  //   const pos = characterRb.current.translation()  // rapier gives {x,y,z}
 
-    if(linkedinRef.current){
-       const linkedinPos = new THREE.Vector3()
-       linkedinRef.current.getWorldPosition(linkedinPos);
+  //   if(linkedinRef.current){
+  //      const linkedinPos = new THREE.Vector3()
+  //      linkedinRef.current.getWorldPosition(linkedinPos);
 
        
-       const characterPos=new THREE.Vector3(pos.x,pos.y,pos.z)
+  //      const characterPos=new THREE.Vector3(pos.x,pos.y,pos.z)
 
-       const dist=characterPos.distanceTo(linkedinPos);
+  //      const dist=characterPos.distanceTo(linkedinPos);
 
-       if(dist<70){
-        setLkd(true);
-        if (dist < 60) {
-          setPlayFall(true)
-          const dir = linkedinPos.clone().sub(characterPos).normalize()
-          characterRb.current.applyImpulse(
-            { x: dir.x * 9000, y: 0, z: dir.z * 9000 },
-            true
-          )
-        }else{
-          setPlayFall(false)
-        }
+  //      if(dist<70){
+  //       setLkd(true);
+  //       if (dist < 60) {
+  //         setPlayFall(true)
+  //         const dir = linkedinPos.clone().sub(characterPos).normalize()
+  //         characterRb.current.applyImpulse(
+  //           { x: dir.x * 9000, y: 0, z: dir.z * 9000 },
+  //           true
+  //         )
+  //       }else{
+  //         setPlayFall(false)
+  //       }
         
-       }else{
-       setLkd(false);}
+  //      }else{
+  //      setLkd(false);}
 
-    }
+  //   }
 
-    // Offset the camera behind/above the character
-    // target = character position (+ slight height offset)
-    controls.current.setLookAt(
-      pos.x-20,        pos.y + 60,  pos.z + 130,   // camera position
-      pos.x,        pos.y + 5,  pos.z,          // look-at target (character)
-      true                                          // smooth
-    )
-  })
+  //   // Offset the camera behind/above the character
+  //   // target = character position (+ slight height offset)
+  //   controls.current.setLookAt(
+  //     pos.x-20,        pos.y + 60,  pos.z + 130,   // camera position
+  //     pos.x,        pos.y + 5,  pos.z,          // look-at target (character)
+  //     true                                          // smooth
+  //   )
+  // })
+
+  //   // controls.current.setLookAt(
+  //   //   pos.x-20,        pos.y + 60,  pos.z + 130,   // camera position
+  //   //   pos.x,        pos.y + 5,  pos.z,          // look-at target (character)
+  //   //   true                                          // smooth
+  //   // )
+
+  //  //  controls.current.setLookAt(
+  // //     pos.x-20,        pos.y+30 ,  pos.z + 100,   // camera position
+  // //     pos.x,        pos.y ,  pos.z,          // look-at target (character)
+  // //     true                                          // smooth
+  // //   )
+
+  // useFrame(()=>{
+  //   if(!theatreRef.current || !theatreView) return;
+
+  //   const theatrePos=new THREE.Vector3();
+  //   theatreRef.current.getWorldPosition(theatrePos);
+
+  //    theatreControls.current.setLookAt(
+  //     theatrePos.x-60,        theatrePos.y + 20,  theatrePos.z + 120, 
+  //     theatrePos.x,        theatrePos.y + 5,  theatrePos.z,      
+  //     true                                     
+  //   )
 
 
-  useFrame(()=>{
-    if(!theatreRef.current || !theatreView) return;
-
-    const theatrePos=new THREE.Vector3();
-    theatreRef.current.getWorldPosition(theatrePos);
-
-     theatreControls.current.setLookAt(
-      theatrePos.x-60,        theatrePos.y + 20,  theatrePos.z + 120, 
-      theatrePos.x,        theatrePos.y + 5,  theatrePos.z,      
-      true                                     
-    )
-
-
-  })
+  // })
 
 
   return (
     <>
   
       <Perf />
-      {/* <OrbitControls/> */}
+      <OrbitControls/>
 
-     
+     <MusicPlayer/>
       {/* <fogExp2 attach="fog" color="#7b4f8a" density={0.0004} /> */}
       <ambientLight color="purple" intensity={2.3} />
       <directionalLight
@@ -121,7 +133,7 @@ const linkedinRef = useRef()
 
       {/* <CameraHUD controlsRef={controls} /> */}
 
-      <CameraControls
+      {/* <CameraControls
         ref={controls}
         minPolarAngle={degToRad(10)}
         maxPolarAngle={degToRad(80)}
@@ -139,8 +151,8 @@ const linkedinRef = useRef()
         smoothTime={0.25}          
         draggingSmoothTime={0.1}
    
-      />
-}
+        /> 
+        } */}
       <Physics  gravity={[0,-80,0]}>
         <Selection>
 
