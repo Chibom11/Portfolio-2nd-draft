@@ -28,7 +28,7 @@ import {Spiderman} from './Spiderman.jsx'
 import { useFrame } from '@react-three/fiber'
 
 import { VFXEmitter, VFXParticles } from 'wawa-vfx';
-import { MusicPlayer } from './MusicPlayer.jsx'
+
 
 
 
@@ -121,7 +121,7 @@ const linkedinRef = useRef()
       <Perf />
       <OrbitControls/>
 
-     <MusicPlayer/>
+   
       {/* <fogExp2 attach="fog" color="#7b4f8a" density={0.0004} /> */}
       <ambientLight color="purple" intensity={2.3} />
       <directionalLight

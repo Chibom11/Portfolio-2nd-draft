@@ -13,7 +13,7 @@ import { RectAreaLightUniformsLib } from 'three/examples/jsm/lights/RectAreaLigh
 import { CuboidCollider, RigidBody } from '@react-three/rapier'
 import Leaves from './Leaves'
 import { CinemaPostProcessing,CinemaScreen } from './CinemaScreen'
-
+import { MusicPlayerContent } from './MusicPlayer'
 RectAreaLightUniformsLib.init()
 function LinkedInGlow() {
   const matRef = useRef()
@@ -236,7 +236,24 @@ export const Model = ({ linkedinRef, theatreRef, ...props }) => {
         intensity={20}
         color="#FF007A"
       />
-      <mesh geometry={nodes.configurator003.geometry} position={[-184.632, 151.49, 75.712]} rotation={[0, 0.873, 0]} scale={4.676}><meshBasicMaterial map={config} /></mesh>
+
+        <mesh geometry={nodes.configurator003.geometry} position={[-184.632, 151.49, 75.712]} rotation={[0, 0.873, 0]} scale={4.676}>
+  <meshBasicMaterial map={config} />
+  <Html
+    position={[0, 3.8, -0.5999]}
+    rotation={[Math.PI/12, 0, 0]}   // tiny Z offset to sit on screen surface
+    transform
+    occlude
+    scale={0.16}             // small because parent scale is 4.676
+    style={{ width: '340px', pointerEvents: 'auto' }}
+  >
+    <div style={{ transform: 'scaleX(-1)' }}>
+    <MusicPlayerContent embedded />  {/* see below */}
+    </div>
+  </Html>
+</mesh>
+        
+      
 
       <rectAreaLight
         position={[-54.65, 270.746, -140.6]}

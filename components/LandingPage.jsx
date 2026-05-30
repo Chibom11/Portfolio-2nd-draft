@@ -5,7 +5,7 @@ import { Loader, SoftShadows, Stars } from '@react-three/drei'
 import { KeyboardControls } from '@react-three/drei'
 import StarBackground from './StarBackground.jsx'
 import * as THREE from 'three'
-import { MusicPlayer } from './MusicPlayer.jsx'
+
 function LandingPage() {
   const keyBoardControlMap = [
     { name: "forward",  keys: ["KeyW"] },
