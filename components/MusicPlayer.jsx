@@ -177,7 +177,7 @@ function SynthwaveCanvas() {
 
 // MusicPlayer.jsx
 
-export function MusicPlayerContent() {
+export function MusicPlayerContent({ embedded, onClose }) {
   const [active, setActive] = useState(null)
 
   return (
@@ -199,14 +199,43 @@ export function MusicPlayerContent() {
     }}>
       <SynthwaveCanvas />
       <div style={{ position: 'relative', zIndex: 1 }}>
-        {active !== null && (
-          <iframe
-            width="0" height="0"
-            src={`https://www.youtube.com/embed/${tracks[active].id}?autoplay=1&loop=1&playlist=${tracks[active].id}`}
-            allow="autoplay; encrypted-media"
-            style={{ border: 'none', display: 'block' }}
-          />
+      {active !== null && !embedded && (
+        <iframe
+          width="0" height="0"
+          src={`https://www.youtube.com/embed/${tracks[active].id}?autoplay=1&loop=1&playlist=${tracks[active].id}`}
+          allow="autoplay; encrypted-media"
+          style={{ border: 'none', display: 'block' }}
+        />
+      )}
+        
+        {/* Add close button when embedded */}
+        {embedded && onClose && (
+          <button
+            onClick={onClose}
+            style={{
+              position: 'absolute',
+              top: '8px',
+              right: '8px',
+              zIndex: 10,
+              width: '24px',
+              height: '24px',
+              background: 'transparent',
+              border: `1px solid #ff4d94`,
+              color: '#ff4d94',
+              cursor: 'pointer',
+              fontSize: '16px',
+            }}
+          >
+            ✕
+          </button>
         )}
+
+ 
+
+
+
+
+
         <div style={{
           padding: '7px 12px 6px',
           fontSize: 10,

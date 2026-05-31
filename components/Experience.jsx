@@ -43,7 +43,7 @@ function Experience() {
 const linkedinRef = useRef()
  const theatreControls=useRef()
  const theatreRef = useRef() 
-
+const [config003screen,setConfig003Screen]=useState(false);
   // // Follow character every frame
   useFrame(() => {
     if (!controls.current || !characterRb.current || theatreView) return
@@ -119,7 +119,7 @@ const linkedinRef = useRef()
     <>
   
       <Perf />
-      <OrbitControls/>
+      {/* <OrbitControls/> */}
 
    
       {/* <fogExp2 attach="fog" color="#7b4f8a" density={0.0004} /> */}
@@ -160,6 +160,8 @@ const linkedinRef = useRef()
 <Model
   linkedinRef={linkedinRef}
   theatreRef={theatreRef}
+  config003screen={config003screen}
+  setConfig003Screen={setConfig003Screen}
   scale={0.8}
   position={[0, -124.5, -16]}
   rotation={[0, Math.PI / 3, 0]}

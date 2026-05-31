@@ -18,11 +18,9 @@ RectAreaLightUniformsLib.init()
 function LinkedInGlow() {
   const matRef = useRef()
 
-  useFrame(({ clock }) => {
-    if (matRef.current) {
-      matRef.current.uniforms.uTime.value = clock.getElapsedTime()
-    }
-  })
+if (matRef.current?.uniforms?.uTime) {
+  matRef.current.uniforms.uTime.value = clock.getElapsedTime()
+}
 
   return (
     <mesh position={[-8, 30, -8]} rotation={[-Math.PI / 2, 0, 0]}>
@@ -125,6 +123,9 @@ export const Model = ({ linkedinRef, theatreRef, ...props }) => {
   const dirTargetRef = useRef()
   const rectRef = useRef()
 
+const handleInteract003=()=>{
+
+}
   useEffect(() => {
     if (dirRef.current && dirTargetRef.current) {
       dirRef.current.target = dirTargetRef.current
@@ -224,7 +225,9 @@ export const Model = ({ linkedinRef, theatreRef, ...props }) => {
   const rsl = useTexture('/textures/Room/roadsidestreetlite.webp')
   rsl.flipY = false
   rsl.colorSpace = THREE.SRGBColorSpace
+  
 
+  useEffect(()=>{console.log("Config003toggle",props.config003screen)},[props.config003screen])
   return (
     <group {...props} dispose={null}>
       <rectAreaLight
@@ -239,18 +242,19 @@ export const Model = ({ linkedinRef, theatreRef, ...props }) => {
 
         <mesh geometry={nodes.configurator003.geometry} position={[-184.632, 151.49, 75.712]} rotation={[0, 0.873, 0]} scale={4.676}>
   <meshBasicMaterial map={config} />
-  <Html
+  {props.config003screen && <Html
     position={[0, 3.8, -0.5999]}
-    rotation={[Math.PI/12, 0, 0]}   // tiny Z offset to sit on screen surface
+    rotation={[Math.PI/12, 0, 0]}  
     transform
     occlude
-    scale={0.16}             // small because parent scale is 4.676
+    scale={0.16}             
     style={{ width: '340px', pointerEvents: 'auto' }}
   >
     <div style={{ transform: 'scaleX(-1)' }}>
-    <MusicPlayerContent embedded />  {/* see below */}
+    <MusicPlayerContent embedded />  
     </div>
-  </Html>
+  </Html> 
+    }
 </mesh>
         
       
@@ -320,7 +324,7 @@ export const Model = ({ linkedinRef, theatreRef, ...props }) => {
         <CuboidCollider args={[10, 10, 60]} position={[0, 0, 10]} />
       </RigidBody>
 
-      <Leaves position={[104.512, 200.988, -79.712]} scale={800} />
+      {/* <Leaves position={[104.512, 200.988, -79.712]} scale={800} /> */}
       <mesh geometry={nodes.socialtrees.geometry} position={[243.107, 184.631, 20.563]} rotation={[-Math.PI, 0.652, -Math.PI]} scale={[7.07, 9.673, 6.057]}><meshBasicMaterial map={socialtrees} /></mesh>
 
       <RigidBody type='fixed' colliders={false} position={[97.837, 164.119, -305.67]} rotation={[0, 0, 1.373]}>
