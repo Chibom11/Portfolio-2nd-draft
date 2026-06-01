@@ -281,6 +281,7 @@ useFrame(({ clock }) => {
 
  
   {config003Hovered && (
+    <>
     <mesh position={[0, 0.5, 0]} rotation={[-Math.PI / 2, 0, 0]}>
       <planeGeometry args={[12, 12]} />
       <shaderMaterial
@@ -331,7 +332,75 @@ fragmentShader={`
 `}
       />
     </mesh>
-  )}
+
+    
+  )
+  
+      {/* floating interact label */}
+<Html
+  position={[0, 4, 0]}
+  center
+  occlude
+  style={{ pointerEvents: 'none' }}
+>
+  <div style={{
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: '6px',
+    userSelect: 'none',
+  }}>
+    <div style={{
+      width: '36px',
+      height: '36px',
+      borderRadius: '50%',
+      border: '2px solid #1A6FFF',
+      boxShadow: '0 0 12px #1A6FFF, 0 0 24px #AA00FF',
+      animation: 'pulseRing 1.2s ease-in-out infinite',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      background: 'rgba(26, 111, 255, 0.12)',
+    }}>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+        style={{ filter: 'drop-shadow(0 0 4px #1A6FFF)', animation: 'fadeFloat 1.2s ease-in-out infinite' }}
+      >
+        <path d="M9 18V5l12-2v13" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        <circle cx="6" cy="18" r="3" fill="#1A6FFF" fillOpacity="0.8" stroke="#ffffff" strokeWidth="1" />
+        <circle cx="18" cy="16" r="3" fill="#AA00FF" fillOpacity="0.8" stroke="#ffffff" strokeWidth="1" />
+      </svg>
+    </div>
+
+    <p style={{
+      margin: 0,
+      color: 'black',
+      fontSize: '16px',
+      fontWeight: '900',
+      fontFamily: 'monospace',
+      letterSpacing: '0.2em',
+      textTransform: 'uppercase',
+      textShadow: '0 0 8px #1A6FFF, 0 0 20px #AA00FF',
+      animation: 'fadeFloat 1.2s ease-in-out infinite',
+    }}>
+      MUSIC
+    </p>
+
+    <style>{`
+      @keyframes pulseRing {
+        0%, 100% { transform: scale(1);   opacity: 1; }
+        50%       { transform: scale(1.3); opacity: 0.5; }
+      }
+      @keyframes fadeFloat {
+        0%, 100% { transform: translateY(0px);  opacity: 1; }
+        50%       { transform: translateY(-3px); opacity: 0.6; }
+      }
+    `}</style>
+  </div>
+</Html>
+    
+    </>
+    )}
+  
 
   {props.config003screen && (
     <Html
