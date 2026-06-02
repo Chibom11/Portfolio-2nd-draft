@@ -42,11 +42,13 @@ function Experience() {
  const [theatreView,setTheatreView]=useState(false)
 const linkedinRef = useRef()
  const theatreControls=useRef()
+ const config003Controls=useRef()
  const theatreRef = useRef() 
 const [config003screen,setConfig003Screen]=useState(false);
+const config003Ref=useRef();
   // // Follow character every frame
   useFrame(() => {
-    if (!controls.current || !characterRb.current || theatreView) return
+    if (!controls.current || !characterRb.current || theatreView || config003screen) return
 
     // Get world position from the RigidBody
     const pos = characterRb.current.translation()  // rapier gives {x,y,z}
@@ -80,9 +82,9 @@ const [config003screen,setConfig003Screen]=useState(false);
 
     // Offset the camera behind/above the character
     // target = character position (+ slight height offset)
-    controls.current.setLookAt(
-      pos.x-20,        pos.y + 60,  pos.z + 130,   // camera position
-      pos.x,        pos.y + 5,  pos.z,          // look-at target (character)
+     controls.current.setLookAt(
+      pos.x-20,        pos.y+30 ,  pos.z + 100,   // camera position
+      pos.x,        pos.y ,  pos.z,          // look-at target (character)
       true                                          // smooth
     )
   })
@@ -108,6 +110,21 @@ const [config003screen,setConfig003Screen]=useState(false);
      theatreControls.current.setLookAt(
       theatrePos.x-60,        theatrePos.y + 20,  theatrePos.z + 120, 
       theatrePos.x,        theatrePos.y + 5,  theatrePos.z,      
+      true                                     
+    )
+
+
+  })
+
+    useFrame(()=>{
+    if(!config003Ref.current || !config003screen) return;
+
+    const config003Pos=new THREE.Vector3();
+    config003Ref.current.getWorldPosition(config003Pos);
+
+     config003Controls.current.setLookAt(
+      config003Pos.x,        config003Pos.y + 6,  config003Pos.z, 
+      config003Pos.x,        config003Pos.y + 5,  config003Pos.z,      
       true                                     
     )
 
@@ -144,7 +161,8 @@ const [config003screen,setConfig003Screen]=useState(false);
    
       />
 
-      {theatreView && <CameraControls
+      {theatreView && 
+      <CameraControls
         ref={theatreControls}
         minDistance={0.001}
         maxDistance={20}
@@ -152,6 +170,16 @@ const [config003screen,setConfig003Screen]=useState(false);
         draggingSmoothTime={0.1}
    
         /> 
+        }
+
+        {config003screen && 
+        <CameraControls 
+            ref={config003Controls}
+             minDistance={0.001}
+          maxDistance={20}
+          smoothTime={0.25}          
+          draggingSmoothTime={0.1}
+        />
         }
       <Physics  gravity={[0,-80,0]}>
         <Selection>
@@ -162,6 +190,7 @@ const [config003screen,setConfig003Screen]=useState(false);
   theatreRef={theatreRef}
   config003screen={config003screen}
   setConfig003Screen={setConfig003Screen}
+  config003Ref={config003Ref}
   scale={0.8}
   position={[0, -124.5, -16]}
   rotation={[0, Math.PI / 3, 0]}

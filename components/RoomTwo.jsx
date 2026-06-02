@@ -18,13 +18,15 @@ RectAreaLightUniformsLib.init()
 function LinkedInGlow() {
   const matRef = useRef()
 
-if (matRef.current?.uniforms?.uTime) {
-  matRef.current.uniforms.uTime.value = clock.getElapsedTime()
-}
+  useFrame(({ clock }) => {
+    if (matRef.current?.uniforms?.uTime) {
+      matRef.current.uniforms.uTime.value = clock.getElapsedTime()
+    }
+  })
 
   return (
-    <mesh position={[-8, 30, -8]} rotation={[-Math.PI / 2, 0, 0]}>
-      <circleGeometry args={[20, 64]} />
+    <mesh position={[-8, 30, -20]} rotation={[-Math.PI / 2, 0, 0]}>
+      <circleGeometry args={[40, 84]} />
       <shaderMaterial
         ref={matRef}
         transparent
@@ -115,7 +117,7 @@ if (matRef.current?.uniforms?.uTime) {
     </mesh>
   )
 }
-export const Model = ({ linkedinRef, theatreRef, ...props }) => {
+export const Model = ({ linkedinRef, theatreRef,config003Ref, ...props }) => {
   const { nodes, materials } = useGLTF('/model/mo.glb')
   const lightRef = useRef()
   const targetRef = useRef()
@@ -124,7 +126,7 @@ export const Model = ({ linkedinRef, theatreRef, ...props }) => {
   const rectRef = useRef()
 
 const [config003Hovered, setConfig003Hovered] = useState(false)
-const config003Ref = useRef()
+
   useEffect(() => {
     if (dirRef.current && dirTargetRef.current) {
       dirRef.current.target = dirTargetRef.current
@@ -290,11 +292,11 @@ useFrame(({ clock }) => {
         depthWrite={false}
         side={THREE.DoubleSide}
         uniforms={{
-  uTime: { value: 0 },
-  uInner: { value: new THREE.Color('#1A6FFF') },
-  uMid:   { value: new THREE.Color('#AA00FF') },
-  uOuter: { value: new THREE.Color('#FF007A') },
-}}
+          uTime: { value: 0 },
+          uInner: { value: new THREE.Color('#1A6FFF') },
+          uMid:   { value: new THREE.Color('#AA00FF') },
+          uOuter: { value: new THREE.Color('#FF007A') },
+        }}
 vertexShader={`
   varying vec2 vUv;
   void main() {
