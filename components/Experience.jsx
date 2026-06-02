@@ -115,7 +115,7 @@ const config003Ref=useRef();
 
 
   })
-
+useEffect(()=>{console.log("Config003 controls",config003Controls)},[config003Controls])
     useFrame(()=>{
     if(!config003Ref.current || !config003screen) return;
 
@@ -123,8 +123,8 @@ const config003Ref=useRef();
     config003Ref.current.getWorldPosition(config003Pos);
 
      config003Controls.current.setLookAt(
-      config003Pos.x,        config003Pos.y + 6,  config003Pos.z, 
-      config003Pos.x,        config003Pos.y + 5,  config003Pos.z,      
+      config003Pos.x-10,        config003Pos.y + 16,  config003Pos.z+3.8, 
+      config003Pos.x,        config003Pos.y+13.8,  config003Pos.z,      
       true                                     
     )
 
@@ -189,6 +189,7 @@ const config003Ref=useRef();
   linkedinRef={linkedinRef}
   theatreRef={theatreRef}
   config003screen={config003screen}
+  config003Controls={config003Controls}
   setConfig003Screen={setConfig003Screen}
   config003Ref={config003Ref}
   scale={0.8}
@@ -199,6 +200,7 @@ const config003Ref=useRef();
   showLinkedin={lkd}
   theatreView={theatreView}
   setTheatreView={setTheatreView}
+
 />
 
           {/* Pass the ref down */}

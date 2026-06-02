@@ -228,7 +228,7 @@ const [config003Hovered, setConfig003Hovered] = useState(false)
   rsl.colorSpace = THREE.SRGBColorSpace
   
  
-
+useEffect(()=>{console.log("Config003 controls",props.config003Controls.current)},[props.config003Controls.current])
 const glowMatRef = useRef()
 
 // Animate the glow time uniform
@@ -272,8 +272,8 @@ useFrame(({ clock }) => {
     document.body.style.cursor = 'auto'
   }}
   onClick={(e) => {
-    e.stopPropagation()
-    props.setConfig003Screen(prev => !prev)
+    // e.stopPropagation()
+    props.setConfig003Screen(true)
   }}
 >
   <meshStandardMaterial
@@ -282,7 +282,7 @@ useFrame(({ clock }) => {
   />
 
  
-  {config003Hovered && (
+  {!props.config003Controls.current && config003Hovered && (
     <>
     <mesh position={[0, 0.5, 0]} rotation={[-Math.PI / 2, 0, 0]}>
       <planeGeometry args={[12, 12]} />

@@ -2,8 +2,8 @@ import { Html } from '@react-three/drei'
 import { useState, useEffect, useRef } from 'react'
 
 const tracks = [
-  { title: "lambic 9 poetry",  artist: "Squarepusher", album: "Ultravisitor",               id: "r9nyEmHW0EA" },
-  { title: "lambic 5 poetry",  artist: "Squarepusher", album: "Budakhan Mindphone",          id: "xihg0s9_1eo" },
+  { title: "Iambic 9 poetry",  artist: "Squarepusher", album: "Ultravisitor",               id: "r9nyEmHW0EA" },
+  { title: "Iambic 5 poetry",  artist: "Squarepusher", album: "Budakhan Mindphone",          id: "xihg0s9_1eo" },
   { title: "K2 Central",       artist: "Squarepusher", album: "Kammerkonzert",               id: "cAvdRtOdRcM" },
   { title: "Beep Street",      artist: "Squarepusher", album: "Hard Normal Daddy",           id: "LKJ-0ZO4pxo" },
   { title: "Flim",             artist: "Aphex Twin",   album: "Come to Daddy",               id: "-yNHlKAzyVA" },
