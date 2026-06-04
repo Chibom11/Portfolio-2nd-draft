@@ -33,7 +33,7 @@ import { VFXEmitter, VFXParticles } from 'wawa-vfx';
 
 
 
-function Experience() {
+function Experience({ onTrackSelect }) {
   const controls = useRef()
   const characterRb = useRef()        
   const [isNight, setIsNight] = useState(false)
@@ -132,6 +132,10 @@ useEffect(()=>{console.log("Config003 controls",config003Controls)},[config003Co
   })
 
 
+
+
+
+
   return (
     <>
   
@@ -200,6 +204,7 @@ useEffect(()=>{console.log("Config003 controls",config003Controls)},[config003Co
   showLinkedin={lkd}
   theatreView={theatreView}
   setTheatreView={setTheatreView}
+    onTrackSelect={onTrackSelect}
 
 />
 

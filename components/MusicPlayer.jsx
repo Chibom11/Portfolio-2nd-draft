@@ -1,7 +1,7 @@
 import { Html } from '@react-three/drei'
 import { useState, useEffect, useRef } from 'react'
 
-const tracks = [
+export const tracks = [
   { title: "Iambic 9 poetry",  artist: "Squarepusher", album: "Ultravisitor",               id: "r9nyEmHW0EA" },
   { title: "Iambic 5 poetry",  artist: "Squarepusher", album: "Budakhan Mindphone",          id: "xihg0s9_1eo" },
   { title: "K2 Central",       artist: "Squarepusher", album: "Kammerkonzert",               id: "cAvdRtOdRcM" },
@@ -180,6 +180,13 @@ function SynthwaveCanvas() {
 export function MusicPlayerContent({ embedded, onClose }) {
   const [active, setActive] = useState(null)
 
+
+
+  function handleSelect(i) {
+    setActive(i)
+    onTrackSelect?.(i)  //tells App to play
+  }
+
   return (
     <div style={{
       position: 'relative',
@@ -199,23 +206,16 @@ export function MusicPlayerContent({ embedded, onClose }) {
     }}>
       <SynthwaveCanvas />
       <div style={{ position: 'relative', zIndex: 1 }}>
-      {active !== null && !embedded && (
-        <iframe
-          width="0" height="0"
-          src={`https://www.youtube.com/embed/${tracks[active].id}?autoplay=1&loop=1&playlist=${tracks[active].id}`}
-          allow="autoplay; encrypted-media"
-          style={{ border: 'none', display: 'block' }}
-        />
-      )}
+
         
         {/* Add close button when embedded */}
-        {embedded && onClose && (
+        
           <button
             onClick={onClose}
             style={{
               position: 'absolute',
-              top: '8px',
-              right: '8px',
+              top: '0px',
+              right: '0px',
               zIndex: 10,
               width: '24px',
               height: '24px',
@@ -228,7 +228,7 @@ export function MusicPlayerContent({ embedded, onClose }) {
           >
             ✕
           </button>
-        )}
+        
 
  
 
@@ -251,7 +251,7 @@ export function MusicPlayerContent({ embedded, onClose }) {
         {tracks.map((t, i) => {
           const isActive = active === i
           return (
-            <div key={i} onClick={() => setActive(i)} style={{
+            <div key={i} onClick={() => handleSelect(i)} style={{
               padding: '7px 12px',
               cursor: 'pointer',
               background: isActive ? `linear-gradient(90deg, #ff2d7828, #ff006a14)` : 'transparent',

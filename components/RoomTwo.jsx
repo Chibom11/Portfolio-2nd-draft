@@ -117,7 +117,7 @@ function LinkedInGlow() {
     </mesh>
   )
 }
-export const Model = ({ linkedinRef, theatreRef,config003Ref, ...props }) => {
+export const Model = ({ linkedinRef, theatreRef,config003Ref,onTrackSelect, ...props }) => {
   const { nodes, materials } = useGLTF('/model/mo.glb')
   const lightRef = useRef()
   const targetRef = useRef()
@@ -272,7 +272,7 @@ useFrame(({ clock }) => {
     document.body.style.cursor = 'auto'
   }}
   onClick={(e) => {
-    // e.stopPropagation()
+    e.stopPropagation()
     props.setConfig003Screen(true)
   }}
 >
@@ -414,7 +414,7 @@ fragmentShader={`
       style={{ width: '340px', pointerEvents: 'auto' }}
     >
       <div style={{ transform: 'scaleX(-1)' }}>
-        <MusicPlayerContent embedded />
+        <MusicPlayerContent embedded  onClose={() => props.setConfig003Screen(false) } onTrackSelect={onTrackSelect}/>
       </div>
     </Html>
   )}
