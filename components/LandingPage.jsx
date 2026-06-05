@@ -7,6 +7,7 @@ import StarBackground from './StarBackground.jsx'
 import * as THREE from 'three'
 // Add this import at the top of LandingPage.jsx
 import { tracks } from '../components/MusicPlayer.jsx'
+import NowPlayingToast from './NowPlaying.jsx'
 
 function LandingPage() {
   const keyBoardControlMap = [
@@ -33,16 +34,17 @@ function LandingPage() {
               style={{ position: 'fixed', opacity: 0, pointerEvents: 'none' }}
             />
           )}
+          <NowPlayingToast activeTrack={activeTrack} />
         <Canvas
             shadows
             className="pl-[100px] w-full h-full"
             camera={{ fov: 45, near: 0.1, far: 10000 }}
             gl={{
-              alpha: true,                          // 👈 transparent canvas bg
+              alpha: true,                        
               toneMapping: THREE.ACESFilmicToneMapping,
               toneMappingExposure: 1.8,
             }}
-            style={{ background: 'transparent' }}  // 👈 let CSS stars show through
+            style={{ background: 'transparent' }} 
           >
           
             <Suspense fallback={null}>

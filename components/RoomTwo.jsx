@@ -25,7 +25,7 @@ function LinkedInGlow() {
   })
 
   return (
-    <mesh position={[-8, 30, -20]} rotation={[-Math.PI / 2, 0, 0]}>
+    <mesh position={[-8, 30, -20]} rotation={[-Math.PI / 2.5, -Math.PI/8,0]}>
       <circleGeometry args={[40, 84]} />
       <shaderMaterial
         ref={matRef}
@@ -282,9 +282,10 @@ useFrame(({ clock }) => {
   />
 
  
-  {!props.config003Controls.current && config003Hovered && (
+  {!props.config003Controls.current && config003Hovered && 
+  (
     <>
-    <mesh position={[0, 0.5, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+    {/* <mesh position={[0, 0.5, 0]} rotation={[-Math.PI / 2, 0, 0]}>
       <planeGeometry args={[12, 12]} />
       <shaderMaterial
         ref={glowMatRef}
@@ -333,14 +334,14 @@ fragmentShader={`
   }
 `}
       />
-    </mesh>
+    </mesh> */}
 
     
   )
   
       {/* floating interact label */}
 <Html
-  position={[0, 4, 0]}
+  position={[0, 5, 0]}
   center
   occlude
   style={{ pointerEvents: 'none' }}

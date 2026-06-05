@@ -177,7 +177,7 @@ function SynthwaveCanvas() {
 
 // MusicPlayer.jsx
 
-export function MusicPlayerContent({ embedded, onClose }) {
+export function MusicPlayerContent({ embedded, onClose,onTrackSelect }) {
   const [active, setActive] = useState(null)
 
 
