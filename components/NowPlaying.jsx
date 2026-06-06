@@ -133,7 +133,18 @@ const css = `
   .np-prog-bar  { height:100%;background:linear-gradient(90deg,#ff4d94,#aa00ff);animation:npProg 20s linear forwards; }
   .np-time { display:flex;justify-content:space-between;margin-top:4px;font-size:9px;color:rgba(255,77,148,0.5);letter-spacing:0.05em; }
   .np-foot-prog { position:absolute;bottom:0;left:0;height:1.5px;background:linear-gradient(90deg,#ff4d94,#aa00ff);animation:npProg 20s linear forwards; }
-`
+  
+  .np-controls { display:flex; gap:6px; flex-shrink:0; align-items:center; }
+.np-btn {
+  width:26px; height:26px; border-radius:6px; cursor:pointer;
+  border:0.5px solid rgba(255,77,148,0.3); background:rgba(255,77,148,0.08);
+  color:#ff4d94; display:flex; align-items:center; justify-content:center;
+  font-size:12px; transition:background 0.15s;
+  user-select:none; flex-shrink:0;
+}
+.np-btn:hover { background:rgba(255,77,148,0.22); }
+.np-btn.stop:hover { background:rgba(255,60,60,0.22); color:#ff6060; border-color:rgba(255,60,60,0.4); }
+  `
 
 const BAR_PARAMS = [
   { d: '0.7s', h: '18px' },
@@ -143,7 +154,7 @@ const BAR_PARAMS = [
   { d: '0.8s', h: '14px' },
 ]
 
-export default function NowPlayingToast({ activeTrack }) {
+export default function NowPlayingToast({ activeTrack, isPaused, onPause, onStop }) {
   const [visible,   setVisible]   = useState(false)
   const [displayed, setDisplayed] = useState(null)
   const [expanded,  setExpanded]  = useState(false)
@@ -168,31 +179,60 @@ export default function NowPlayingToast({ activeTrack }) {
         <div className="np-scanline" />
 
         {/* ── collapsed row ── */}
-        <div className="np-top">
-          <div className="np-art">
-            <div className="np-vinyl"><div className="np-hole" /></div>
-          </div>
+<div className="np-top">
+  <div className="np-art">
+    <div className="np-vinyl"><div className="np-hole" /></div>
+  </div>
 
-          <div className="np-info">
-            <div className="np-live"><span className="np-dot" />now playing</div>
-            <div className="np-title">{track.title}</div>
-            <div className="np-meta">{track.artist} · {track.album}</div>
-          </div>
+  <div className="np-info">
+    <div className="np-live">
+      <span className="np-dot" style={{ animationPlayState: isPaused ? 'paused' : 'running' }} />
+      {isPaused ? 'paused' : 'now playing'}
+    </div>
+    <div className="np-title">{track.title}</div>
+    <div className="np-meta">{track.artist} · {track.album}</div>
+  </div>
 
-          <div className="np-bars" aria-hidden="true">
-            {BAR_PARAMS.map((b, i) => (
-              <div key={i} className="np-bar" style={{ '--d': b.d, '--h': b.h, height: b.h }} />
-            ))}
-          </div>
+  {/* Only show bars when playing */}
+  {!isPaused && (
+    <div className="np-bars" aria-hidden="true">
+      {BAR_PARAMS.map((b, i) => (
+        <div key={i} className="np-bar" style={{ '--d': b.d, '--h': b.h, height: b.h }} />
+      ))}
+    </div>
+  )}
 
-          <div
-            className={`np-chevron${expanded ? ' open' : ''}`}
-            onClick={() => setExpanded(e => !e)}
-            aria-label={expanded ? 'Collapse details' : 'Expand details'}
-          >
-            ⌄
-          </div>
-        </div>
+  <div className="np-controls">
+  
+    {/* <div
+      className="np-btn"
+      onClick={onPause}
+      aria-label={isPaused ? 'Resume' : 'Pause'}
+      title={isPaused ? 'Resume' : 'Pause'}
+    >
+      {isPaused ? '▶' : '⏸'}
+    </div> */}
+
+    {/* Stop */}
+    <div
+      className="np-btn stop"
+      onClick={onStop}
+      aria-label="Stop"
+      title="Stop"
+    >
+      ■
+    </div>
+
+    {/* Expand chevron */}
+    <div
+      className={`np-chevron${expanded ? ' open' : ''}`}
+      onClick={() => setExpanded(e => !e)}
+      aria-label={expanded ? 'Collapse details' : 'Expand details'}
+    >
+      ⌄
+    </div>
+  </div>
+</div>
 
         {/* ── expanded panel ── */}
         {expanded && (
@@ -211,14 +251,11 @@ export default function NowPlayingToast({ activeTrack }) {
                 </div>
               </div>
             </div>
-            <div className="np-prog-wrap">
-              <div className="np-prog-bar" key={displayed} />
-            </div>
-            <div className="np-time"><span>0:00</span><span>—:——</span></div>
+            
+         
           </div>
         )}
 
-        <div className="np-foot-prog" key={`fp-${displayed}`} />
       </div>
     </>
   )

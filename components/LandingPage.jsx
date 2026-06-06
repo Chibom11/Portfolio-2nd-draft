@@ -20,21 +20,45 @@ function LandingPage() {
     {name:"dance", keys:['KeyQ']},
   ]
   const [activeTrack, setActiveTrack] = useState(null) 
+
+const [isPaused, setIsPaused] = useState(false)
+
+function handleTrackSelect(i) {
+  setActiveTrack(i)
+  setIsPaused(false)
+}
+
+function handlePause() {
+  setIsPaused(p => !p)
+}
+
+function handleStop() {
+  setActiveTrack(null)
+  setIsPaused(false)
+}
+  
   return (
     <div className='w-full h-screen flex items-center justify-center bg-black/90'>
          <StarBackground />
       <div className='absolute w-[100%] h-[100%]'>
         <KeyboardControls map={keyBoardControlMap}>
 
-          {activeTrack !== null && (
-            <iframe
-              width="0" height="0"
-              src={`https://www.youtube.com/embed/${tracks[activeTrack].id}?autoplay=1&loop=1&playlist=${tracks[activeTrack].id}`}
-              allow="autoplay; encrypted-media"
-              style={{ position: 'fixed', opacity: 0, pointerEvents: 'none' }}
-            />
-          )}
-          <NowPlayingToast activeTrack={activeTrack} />
+         {activeTrack !== null && !isPaused && (
+  <iframe
+    key={activeTrack}
+    width="0" height="0"
+    src={`https://www.youtube.com/embed/${tracks[activeTrack].id}?autoplay=1&loop=1&playlist=${tracks[activeTrack].id}`}
+    allow="autoplay; encrypted-media"
+    style={{ position: 'fixed', opacity: 0, pointerEvents: 'none' }}
+  />
+)}
+
+<NowPlayingToast
+  activeTrack={activeTrack}
+  isPaused={isPaused}
+  onPause={handlePause}
+  onStop={handleStop}
+/>
         <Canvas
             shadows
             className="pl-[100px] w-full h-full"
