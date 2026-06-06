@@ -1,11 +1,10 @@
 import { Canvas } from '@react-three/fiber'
 import React, { Suspense, useRef, useState } from 'react'
 import Experience from '../components/Experience.jsx'
-import { Loader, SoftShadows, Stars } from '@react-three/drei'
+import { Loader } from '@react-three/drei'
 import { KeyboardControls } from '@react-three/drei'
 import StarBackground from './StarBackground.jsx'
 import * as THREE from 'three'
-// Add this import at the top of LandingPage.jsx
 import { tracks } from '../components/MusicPlayer.jsx'
 import NowPlayingToast from './NowPlaying.jsx'
 
@@ -17,65 +16,65 @@ function LandingPage() {
     { name: "right",    keys: ["KeyA"] },
     { name: "flip",     keys: ["Space"] },
     { name: "jog",      keys: ["Shift"] },
-    {name:"dance", keys:['KeyQ']},
+    { name: "dance",    keys: ["KeyQ"] },
   ]
-  const [activeTrack, setActiveTrack] = useState(null) 
 
-const [isPaused, setIsPaused] = useState(false)
+  const [activeTrack, setActiveTrack] = useState(null)
+  const [isPaused, setIsPaused] = useState(false)
 
-function handleTrackSelect(i) {
-  setActiveTrack(i)
-  setIsPaused(false)
-}
+  function handleTrackSelect(i) {
+    setActiveTrack(i)
+    setIsPaused(false)
+  }
 
-function handlePause() {
-  setIsPaused(p => !p)
-}
+  function handlePause() {
+    setIsPaused(p => !p)
+  }
 
-function handleStop() {
-  setActiveTrack(null)
-  setIsPaused(false)
-}
-  
+  function handleStop() {
+    setActiveTrack(null)
+    setIsPaused(false)
+  }
+
   return (
-    <div className='w-full h-screen flex items-center justify-center bg-black/90'>
-         <StarBackground />
+    <div className='w-full h-screen flex items-center justify-center bg-black'>
+      <StarBackground />
       <div className='absolute w-[100%] h-[100%]'>
         <KeyboardControls map={keyBoardControlMap}>
 
-         {activeTrack !== null && !isPaused && (
-  <iframe
-    key={activeTrack}
-    width="0" height="0"
-    src={`https://www.youtube.com/embed/${tracks[activeTrack].id}?autoplay=1&loop=1&playlist=${tracks[activeTrack].id}`}
-    allow="autoplay; encrypted-media"
-    style={{ position: 'fixed', opacity: 0, pointerEvents: 'none' }}
-  />
-)}
+          {activeTrack !== null && !isPaused && (
+            <iframe
+              key={activeTrack}
+              width="0" height="0"
+              src={`https://www.youtube.com/embed/${tracks[activeTrack].id}?autoplay=1&loop=1&playlist=${tracks[activeTrack].id}`}
+              allow="autoplay; encrypted-media"
+              style={{ position: 'fixed', opacity: 0, pointerEvents: 'none' }}
+            />
+          )}
 
-<NowPlayingToast
-  activeTrack={activeTrack}
-  isPaused={isPaused}
-  onPause={handlePause}
-  onStop={handleStop}
-/>
-        <Canvas
+          <NowPlayingToast
+            activeTrack={activeTrack}
+            isPaused={isPaused}
+            onPause={handlePause}
+            onStop={handleStop}
+          />
+
+          <Canvas
             shadows
-            className="pl-[100px] w-full h-full"
+            className="w-full h-full"
             camera={{ fov: 45, near: 0.1, far: 10000 }}
             gl={{
-              alpha: true,                        
+              alpha: false,
               toneMapping: THREE.ACESFilmicToneMapping,
               toneMappingExposure: 1.8,
             }}
-            style={{ background: 'transparent' }} 
+            style={{ background: '#000' }}
           >
-          
             <Suspense fallback={null}>
-              
-              <Experience onTrackSelect={setActiveTrack}/>
+              <Experience onTrackSelect={handleTrackSelect} />
             </Suspense>
           </Canvas>
+
         </KeyboardControls>
         <Loader dataInterpolation={(p) => `Loading ${p.toFixed(1)}%`} />
       </div>

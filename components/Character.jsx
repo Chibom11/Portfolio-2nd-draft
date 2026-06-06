@@ -94,7 +94,7 @@ const Character = forwardRef((props, rbRef) => {
         
         playAnimRef.current('jump')
          setTimeout(() => {
-        rbRef.current?.applyImpulse({ x: 0, y: 14000, z: 0 }, true)
+        rbRef.current?.applyImpulse({ x: 0, y: 38000, z: 0 }, true)
       }, 250)
 
         const duration = (actions['jump']?._clip.duration ?? 1) * 1000
@@ -111,7 +111,7 @@ const Character = forwardRef((props, rbRef) => {
   }, [actions])
 
   return (
-    <RigidBody ref={rb} colliders="hull" scale={10}
+    <RigidBody ref={rb} colliders="cuboid" scale={10}
       position={[0, 0, 0]} enabledRotations={[false, false, false]}
     >
       <group ref={characterRef}>

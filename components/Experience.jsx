@@ -139,7 +139,7 @@ useEffect(()=>{console.log("Config003 controls",config003Controls)},[config003Co
   return (
     <>
   
-      <Perf />
+      {/* <Perf /> */}
       {/* <OrbitControls/> */}
 
    
@@ -185,7 +185,7 @@ useEffect(()=>{console.log("Config003 controls",config003Controls)},[config003Co
           draggingSmoothTime={0.1}
         />
         }
-      <Physics  gravity={[0,-80,0]}>
+      <Physics gravity={[0,-80,0]}>
         <Selection>
 
 
@@ -209,8 +209,8 @@ useEffect(()=>{console.log("Config003 controls",config003Controls)},[config003Co
 />
 
           {/* Pass the ref down */}
-          {/* <Character ref={characterRb} /> */}
-          <Miles ref={characterRb} playfall={playfall} setPlayFall={setPlayFall}/>
+          <Character ref={characterRb} />
+        {/*  <Miles ref={characterRb} playfall={playfall} setPlayFall={setPlayFall}/>*/}
           {/* <Spiderman  ref={characterRb}/> */}
 
     
@@ -260,12 +260,12 @@ useEffect(()=>{console.log("Config003 controls",config003Controls)},[config003Co
   />
 
   {/* 🕶️ Vignette — dark edges, always last */}
-  {/* <Vignette
-    offset={0.3}        // how far in the vignette starts
-    darkness={0.8}      // how dark the edges get
+  <Vignette
+    offset={0.6}        // how far in the vignette starts
+    darkness={0.6}      // how dark the edges get
     eskil={false}       // false = smooth, true = sharp
     blendFunction={BlendFunction.NORMAL}
-  /> */}
+  />
 
 </EffectComposer>
     </>
