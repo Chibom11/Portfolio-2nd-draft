@@ -67,14 +67,9 @@ export function CinemaPostProcessing() {
   )
 }
 
-// ─────────────────────────────────────────────
-// 2.  SCREEN MESH + PROJECTOR LIGHT
-//     Replaces your existing RigidBody block.
-//     Pass `proj` texture and `theatreView` flag
-//     as props just like before.
-// ─────────────────────────────────────────────
-export function CinemaScreen({ proj, theatreView, nodes }) {
-  const theatreRef = useRef()
+
+export function CinemaScreen({ proj, theatreView, setTheatreView, nodes, theatreRef }) {
+
   const screenLightRef = useRef()
 
   // Subtle flicker — real projectors aren't perfectly steady
@@ -118,35 +113,187 @@ export function CinemaScreen({ proj, theatreView, nodes }) {
       />
 
       {/* ── Iframe overlay ── */}
-      {theatreView && (
-        <Html
-          transform
-          occlude
-          position={[192.62, 205.8, 282]}
-          rotation={[0, -1.572, -0.001]}
-          scale={6.2}
-        >
-          {/*
-            Wrapper adds:
-              • scanlines overlay (CSS repeating-linear-gradient)
-              • very slight perspect‑warp at edges (CSS perspective)
-              • a soft screen-edge glow bleeding outside the iframe frame
-          */}
-          <div style={wrapperStyle}>
-            {/* Scanlines */}
-            <div style={scanlinesStyle} />
+     {!theatreView && (
+  <Html
+    transform
+    occlude
+    position={[192.62, 205.8, 282]}
+    rotation={[0, -1.572, -0.001]}
+    scale={6.2}
+  >
+    <div style={wrapperStyle}>
+      <div style={scanlinesStyle} />
+      <div style={edgeBleedStyle} />
 
-            {/* Screen edge bleed — simulates light spilling off screen */}
-            <div style={edgeBleedStyle} />
+      {/* dark cinematic background */}
+      <div style={{
+        width: '880px', height: '360px',
+        background: 'radial-gradient(ellipse 160% 120% at 50% 50%, #1a1108 0%, #0d0a06 50%, #000 100%)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        position: 'relative', overflow: 'hidden', borderRadius: '4px',
+        fontFamily: 'Georgia, serif',
+      }}>
 
-            <iframe
-              src="/projector_movie_carousel.html"
-              style={iframeStyle}
-              title="theatre"
-            />
+        {/* film edge burns */}
+        <div style={{ position:'absolute', inset:0, pointerEvents:'none',
+          background: 'linear-gradient(to right, rgba(255,130,10,0.09) 0%, transparent 5%, transparent 95%, rgba(255,130,10,0.07) 100%)'
+        }} />
+
+        {/* sprocket left */}
+        <div style={{ position:'absolute', left:0, top:0, bottom:0, width:'18px',
+          background:'#080808', borderRight:'1px solid #161616',
+          display:'flex', flexDirection:'column', justifyContent:'space-evenly', alignItems:'center'
+        }}>
+          {[...Array(8)].map((_,i) => (
+            <div key={i} style={{ width:'7px', height:'10px', borderRadius:'2px', background:'#000', border:'0.5px solid #222' }} />
+          ))}
+        </div>
+
+        {/* sprocket right */}
+        <div style={{ position:'absolute', right:0, top:0, bottom:0, width:'18px',
+          background:'#080808', borderLeft:'1px solid #161616',
+          display:'flex', flexDirection:'column', justifyContent:'space-evenly', alignItems:'center'
+        }}>
+          {[...Array(8)].map((_,i) => (
+            <div key={i} style={{ width:'7px', height:'10px', borderRadius:'2px', background:'#000', border:'0.5px solid #222' }} />
+          ))}
+        </div>
+
+        {/* vignette */}
+        <div style={{ position:'absolute', inset:0, pointerEvents:'none',
+          background:'radial-gradient(ellipse 85% 85% at 50% 50%, transparent 25%, rgba(0,0,0,0.65) 70%, rgba(0,0,0,0.97) 100%)'
+        }} />
+
+        {/* content */}
+        <div style={{ position:'relative', zIndex:10, display:'flex', flexDirection:'column',
+          alignItems:'center', textAlign:'center', padding:'0 80px'
+        }}>
+          <div style={{ fontFamily:'Courier New, monospace', fontSize:'9px', letterSpacing:'0.3em',
+            textTransform:'uppercase', color:'rgba(255,210,100,0.28)', marginBottom:'22px',
+            display:'flex', alignItems:'center', gap:'10px'
+          }}>
+            <span style={{ display:'block', height:'0.5px', width:'24px', background:'rgba(255,210,100,0.2)' }} />
+            Frame 0001
+            <span style={{ display:'block', height:'0.5px', width:'24px', background:'rgba(255,210,100,0.2)' }} />
           </div>
-        </Html>
-      )}
+
+          <span style={{ fontFamily:'Georgia, serif', fontSize:'64px', lineHeight:'0.55',
+            color:'rgba(255,210,100,0.14)', fontStyle:'italic', marginBottom:'6px', display:'block'
+          }}>"</span>
+
+          <p style={{ fontFamily:'Georgia, serif', fontSize:'24px', lineHeight:'1.75',
+            fontWeight:300, fontStyle:'italic', color:'rgba(245,235,200,0.9)',
+            letterSpacing:'0.03em', margin:0
+          }}>
+            Cinema is a matter of<br />
+            <span style={{ fontStyle:'normal', fontWeight:600, color:'rgba(255,215,110,0.95)' }}>
+              what's in the frame
+            </span><br />
+            and what's out.
+          </p>
+
+          <div style={{ height:'0.5px', width:'180px',
+            background:'linear-gradient(to right, transparent, rgba(255,210,100,0.4), transparent)',
+            margin:'18px auto'
+          }} />
+
+          <div style={{ fontFamily:'Courier New, monospace', fontSize:'13px',
+            letterSpacing:'0.22em', textTransform:'uppercase', color:'rgba(255,210,100,0.85)',
+            textShadow:'0 0 12px rgba(255,200,80,0.6)', marginBottom:'24px'
+          }}>
+            — Martin Scorsese
+          </div>
+
+          <div
+            onClick={() => setTheatreView(true)}
+            style={{
+              cursor:'pointer', padding:'8px 24px',
+              border:'1px solid rgba(255,210,100,0.4)', borderRadius:'2px',
+              background:'rgba(255,200,80,0.06)', color:'rgba(255,210,100,0.8)',
+              fontFamily:'Courier New, monospace', fontSize:'10px',
+              letterSpacing:'0.3em', textTransform:'uppercase',
+              display:'flex', alignItems:'center', gap:'8px',
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.background = 'rgba(255,200,80,0.15)'
+              e.currentTarget.style.color = 'rgba(255,220,120,1)'
+              e.currentTarget.style.borderColor = 'rgba(255,210,100,0.8)'
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.background = 'rgba(255,200,80,0.06)'
+              e.currentTarget.style.color = 'rgba(255,210,100,0.8)'
+              e.currentTarget.style.borderColor = 'rgba(255,210,100,0.4)'
+            }}
+          >
+            <span style={{ fontSize:'12px' }}>▶</span>
+            Enter Theatre
+          </div>
+        </div>
+      </div>
+    </div>
+  </Html>
+)}
+      {theatreView && (
+  <Html
+    transform
+    occlude
+    position={[192.62, 205.8, 282]}
+    rotation={[0, -1.572, -0.001]}
+    scale={6.2}
+  >
+    <div style={wrapperStyle}>
+      <div style={scanlinesStyle} />
+      <div style={edgeBleedStyle} />
+
+      {/* close button */}
+      <div
+        onClick={() => setTheatreView(false)}
+        onMouseEnter={e => {
+          e.currentTarget.style.background = 'rgba(255,200,80,0.18)'
+          e.currentTarget.style.borderColor = 'rgba(255,210,100,0.9)'
+          e.currentTarget.style.color = 'rgba(255,230,130,1)'
+          e.currentTarget.style.letterSpacing = '0.35em'
+        }}
+        onMouseLeave={e => {
+          e.currentTarget.style.background = 'rgba(0,0,0,0.55)'
+          e.currentTarget.style.borderColor = 'rgba(255,210,100,0.3)'
+          e.currentTarget.style.color = 'rgba(255,210,100,0.6)'
+          e.currentTarget.style.letterSpacing = '0.28em'
+        }}
+        style={{
+          position: 'absolute',
+          top: '10px',
+          right: '0px',
+          zIndex: 20,
+          cursor: 'pointer',
+          padding: '4px 14px',
+          border: '1px solid rgba(255,210,100,0.3)',
+          borderRadius: '2px',
+          background: 'rgba(0,0,0,0.55)',
+          color: 'rgba(255,210,100,0.6)',
+          fontFamily: 'Courier New, monospace',
+          fontSize: '10px',
+          letterSpacing: '0.28em',
+          textTransform: 'uppercase',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '6px',
+          transition: 'all 0.2s',
+          backdropFilter: 'blur(4px)',
+        }}
+      >
+        <span style={{ fontSize: '8px', opacity: 0.7 }}>✕</span>
+        Exit
+      </div>
+
+      <iframe
+        src="/projector_movie_carousel.html"
+        style={iframeStyle}
+        title="theatre"
+      />
+    </div>
+  </Html>
+)}
     </>
   )
 }

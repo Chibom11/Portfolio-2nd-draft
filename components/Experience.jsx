@@ -203,6 +203,7 @@ useEffect(()=>{console.log("Config003 controls",config003Controls)},[config003Co
   setIsNight={setIsNight}
   showLinkedin={lkd}
   theatreView={theatreView}
+ 
   setTheatreView={setTheatreView}
     onTrackSelect={onTrackSelect}
 

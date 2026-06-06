@@ -478,6 +478,7 @@ fragmentShader={`
     <CinemaScreen
   proj={proj}
   theatreView={props.theatreView}
+  setTheatreView={props.setTheatreView}
   nodes={nodes}
   theatreRef={theatreRef}
 />
