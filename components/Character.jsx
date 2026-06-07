@@ -30,7 +30,7 @@ const Character = forwardRef((props, rbRef) => {
     currentAnim.current = name
   }, [actions])
 
-  // ✅ Keep the ref in sync with latest playAnim every render
+console.log("Actions: ",actions)
   useEffect(() => {
     playAnimRef.current = playAnim
   })
@@ -109,6 +109,18 @@ const Character = forwardRef((props, rbRef) => {
 
     return () => document.removeEventListener('keydown', handleKeyDown)
   }, [actions])
+
+ useEffect(() => {
+   if (props.playfall === true && !isFlipping.current) {
+     isFlipping.current = true
+     playAnim('falling')
+     const duration = (actions['falling']?._clip.duration ?? 1) * 1000
+     setTimeout(() => {
+       isFlipping.current = false
+       window.open('https://www.linkedin.com/in/shivam-surroach-b54259294/', '_blank')
+     }, 500)
+   }
+ }, [props.playfall, actions])
 
   return (
     <RigidBody ref={rb} colliders="cuboid" scale={10}
