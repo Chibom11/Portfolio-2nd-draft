@@ -2,366 +2,385 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Movie Carousel</title>
+<meta name="viewport" content="width=880" />
+<title>Theatre</title>
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 html, body {
-  width: 100%;
-  height: 420px;
-  overflow: hidden;
-  background: #141414;
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-}
-
-.wrap {
   width: 880px;
-  height: 420px;
-  margin: 0 auto;
-  position: relative;
+  height: 360px;
   overflow: hidden;
+  background: #07050f;
+  font-family: 'Courier New', Courier, monospace;
 }
 
-.slides-track {
-  display: flex;
-  height: 420px;
-  transition: transform 0.55s cubic-bezier(0.77,0,0.18,1);
+/* ══ SCENE AMBIENT BG ══ */
+.scene-bg {
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background:
+    radial-gradient(ellipse 70% 90% at 15% 70%, rgba(120,40,200,0.22) 0%, transparent 58%),
+    radial-gradient(ellipse 55% 65% at 85% 30%, rgba(30,180,160,0.14) 0%, transparent 55%),
+    #07050f;
 }
 
-.slide {
-  min-width: 880px;
-  height: 420px;
-  position: relative;
-  display: flex;
-  align-items: stretch;
-}
-
-/* ── Hero backdrop ── */
-.backdrop {
-  position: absolute;
-  inset: 0;
-  background-size: cover;
-  background-position: center top;
-}
-.backdrop-td {
-  background: linear-gradient(115deg,
-    #000000 0%, #0d0200 12%, #3a0800 28%,
-    #7a1200 44%, #c42a10 58%, #e84e1a 72%,
-    #f47c20 85%, #faa030 100%);
-}
-.backdrop-wh {
-  background: linear-gradient(115deg,
-    #000000 0%, #010208 12%, #04082a 28%,
-    #081244 44%, #0f1e72 58%, #1a30a8 72%,
-    #2848d8 85%, #4060ff 100%);
-}
-.backdrop::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to right,
-    rgba(10,10,10,1.0) 0%,
-    rgba(10,10,10,0.92) 25%,
-    rgba(10,10,10,0.55) 50%,
-    rgba(10,10,10,0.10) 72%,
-    rgba(10,10,10,0.0) 100%);
-}
-
-/* ── Content panel ── */
-.content {
-  position: relative;
-  z-index: 2;
-  padding: 36px 44px;
-  width: 530px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 0;
-}
-
-/* ── Poster art on right ── */
-.poster-col {
-  position: relative;
-  z-index: 2;
-  margin-left: auto;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  padding-right: 28px;
-  margin-bottom: 60px;
-  flex-shrink: 0;
-}
-.poster-card {
-  width: 310px;
-  height: 350px;
-  border-radius: 8px;
-  overflow: hidden;
-  border: 2px solid rgba(255,255,255,0.18);
-  position: relative;
-  box-shadow: 0 30px 80px rgba(0,0,0,0.85), 0 0 40px rgba(0,0,0,0.5);
-}
-.poster-card img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-/* ── Text styles ── */
-.genre-row {
-  display: flex;
-  gap: 6px;
-  margin-bottom: 10px;
-}
-.genre-tag {
-  font-size: 9px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.5);
-  border: 0.5px solid rgba(255,255,255,0.25);
-  padding: 3px 8px;
-  border-radius: 2px;
-}
-
-.title-block {
-  margin-bottom: 8px;
-}
-.film-title {
-  font-size: 38px;
-  font-weight: 800;
-  color: #fff;
-  letter-spacing: -0.03em;
-  line-height: 1;
-}
-.film-title-td { color: #fff; text-shadow: 0 0 40px rgba(230,80,20,0.4); }
-.film-title-wh { color: #fff; text-shadow: 0 0 40px rgba(60,100,255,0.4); }
-
-.meta-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 14px;
-}
-.meta-year {
-  font-size: 13px;
-  font-weight: 700;
-  color: #46d369;
-}
-.meta-dot { font-size: 10px; color: rgba(255,255,255,0.3); }
-.meta-info {
-  font-size: 12px;
-  color: rgba(255,255,255,0.5);
-  letter-spacing: 0.04em;
-}
-.match-badge {
-  font-size: 11px;
-  font-weight: 700;
-  color: #46d369;
-  border: 1.5px solid #46d369;
-  padding: 1px 6px;
-  border-radius: 2px;
-  letter-spacing: 0.05em;
-}
-
-.synopsis {
-  font-size: 12.5px;
-  line-height: 1.65;
-  color: rgba(255,255,255,0.72);
-  margin-bottom: 18px;
-  max-width: 390px;
-  display: -webkit-box;
-  -webkit-line-clamp: 4;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.btn-row {
-  display: flex;
-  gap: 8px;
-}
-.btn-play {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  background: #fff;
-  color: #000;
-  border: none;
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  padding: 8px 18px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background 0.15s;
-}
-.btn-play:hover { background: rgba(255,255,255,0.85); }
-.btn-play svg { width: 16px; height: 16px; fill: #000; flex-shrink: 0; }
-
-.btn-more {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  background: rgba(109,109,110,0.7);
-  color: #fff;
-  border: none;
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  padding: 8px 18px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background 0.15s;
-}
-.btn-more:hover { background: rgba(109,109,110,0.9); }
-.btn-more svg { width: 16px; height: 16px; fill: #fff; flex-shrink: 0; }
-
-/* ── Nav ── */
-.nav-btn {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 10;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  border: 1.5px solid rgba(255,255,255,0.35);
-  background: rgba(20,20,20,0.7);
-  color: #fff;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.15s, border-color 0.15s;
-  font-size: 18px;
-  line-height: 1;
-}
-.nav-btn:hover { background: rgba(20,20,20,0.92); border-color: #fff; }
-.nav-prev { left: 8px; }
-.nav-next { right: 8px; }
-
-/* ── Dots ── */
-.dots {
-  position: absolute;
-  bottom: 16px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 10;
-  display: flex;
-  gap: 6px;
-}
-.dot {
-  width: 22px;
-  height: 3px;
-  border-radius: 1.5px;
-  background: rgba(255,255,255,0.25);
-  cursor: pointer;
-  transition: background 0.2s, width 0.2s;
-}
-.dot.active { background: #e50914; width: 32px; }
-
-/* ══════════════════════════════════════
-   CINEMATIC POST-PROCESSING OVERLAYS
-   ══════════════════════════════════════ */
-
-/* Vignette */
-#vignette {
-  position: fixed; inset: 0; z-index: 100; pointer-events: none;
-  background: radial-gradient(ellipse at 50% 50%,
-    transparent 42%, rgba(0,0,0,0.32) 68%,
-    rgba(0,0,0,0.68) 88%, rgba(0,0,0,0.86) 100%);
-}
-
-/* Scanlines */
+/* ══ OVERLAYS ══ */
 #scanlines {
-  position: fixed; inset: 0; z-index: 101; pointer-events: none;
+  position: fixed; inset: 0; z-index: 200; pointer-events: none;
   background: repeating-linear-gradient(
     0deg,
-    rgba(0,0,0,0.055) 0px, rgba(0,0,0,0.055) 1px,
+    rgba(0,0,0,0.07) 0px, rgba(0,0,0,0.07) 1px,
     transparent 1px, transparent 3px
   );
 }
-
-/* Chromatic aberration via SVG filter on wrap */
-.wrap { filter: url(#ca-filter); }
-
-/* Bloom canvas — screen blend over everything */
-#bloom-canvas {
-  position: fixed; inset: 0; z-index: 99;
-  pointer-events: none; mix-blend-mode: screen; opacity: 0.5;
+#vignette {
+  position: fixed; inset: 0; z-index: 199; pointer-events: none;
+  background: radial-gradient(ellipse 80% 85% at 50% 50%,
+    transparent 30%, rgba(4,2,14,0.45) 68%, rgba(4,2,14,0.88) 100%);
 }
-
-/* Film grain */
 #grain-canvas {
-  position: fixed; inset: 0; z-index: 102;
-  pointer-events: none; mix-blend-mode: overlay; opacity: 0.15;
+  position: fixed; inset: 0; z-index: 201;
+  pointer-events: none; mix-blend-mode: overlay; opacity: 0.10;
 }
 
-/* Subtle projector flicker */
+/* ══ SPROCKETS ══ */
+.sprocket {
+  position: fixed; top: 0; bottom: 0; width: 18px;
+  background: #050410; z-index: 50;
+  display: flex; flex-direction: column;
+  justify-content: space-evenly; align-items: center;
+}
+.sprocket.left  { left: 0;  border-right: 0.5px solid rgba(140,60,255,0.18); }
+.sprocket.right { right: 0; border-left:  0.5px solid rgba(140,60,255,0.18); }
+.hole {
+  width: 6px; height: 10px; border-radius: 2px;
+  background: #020108; border: 0.5px solid rgba(140,60,255,0.12);
+}
+
+/* ══ DATA STRIPS ══ */
+.strip {
+  position: fixed; left: 18px; right: 18px;
+  height: 16px; background: rgba(6,3,18,0.95); z-index: 50;
+  display: flex; align-items: center; padding: 0 16px; overflow: hidden;
+}
+.strip.top    { top: 0;    border-bottom: 0.5px solid rgba(140,60,255,0.18); }
+.strip.bottom { bottom: 0; border-top:    0.5px solid rgba(30,180,160,0.16); }
+.strip span {
+  font-size: 6.5px; letter-spacing: 0.13em; white-space: nowrap;
+}
+.strip.top    span { color: rgba(160,100,255,0.20); }
+.strip.bottom span { color: rgba(30,200,180,0.18);  }
+
+/* ══ GATE CORNERS ══ */
+.gate { position: fixed; width: 12px; height: 12px; z-index: 51; pointer-events: none; }
+.gate.tl { top: 20px;  left: 22px;  border-top:    0.5px solid rgba(140,60,255,0.5); border-left:   0.5px solid rgba(140,60,255,0.5); }
+.gate.tr { top: 20px;  right: 22px; border-top:    0.5px solid rgba(140,60,255,0.5); border-right:  0.5px solid rgba(140,60,255,0.5); }
+.gate.bl { bottom: 20px; left: 22px;  border-bottom: 0.5px solid rgba(30,180,160,0.45); border-left:   0.5px solid rgba(30,180,160,0.45); }
+.gate.br { bottom: 20px; right: 22px; border-bottom: 0.5px solid rgba(30,180,160,0.45); border-right:  0.5px solid rgba(30,180,160,0.45); }
+
+/* ══ FLICKER ══ */
 @keyframes flicker {
-  0%,100% { opacity: 1; }
-  49%     { opacity: 0.984; }
-  50%     { opacity: 0.971; }
-  51%     { opacity: 0.988; }
-  77%     { opacity: 0.979; }
-  78%     { opacity: 1; }
+  0%,100%{ opacity:1; } 47%{ opacity:0.985; } 48%{ opacity:0.972; } 49%{ opacity:0.989; } 76%{ opacity:0.981; }
 }
-.wrap { animation: flicker 6.1s infinite linear; }
 
-/* ── Popup ── */
+/* ══ WRAP + TRACK ══ */
+.wrap {
+  width: 880px; height: 360px;
+  position: relative; overflow: hidden;
+  animation: flicker 7.3s infinite linear;
+  z-index: 1;
+}
+
+.slides-track {
+  display: flex; height: 360px;
+  transition: transform 0.60s cubic-bezier(0.77,0,0.18,1);
+}
+
+.slide {
+  min-width: 880px; height: 360px;
+  position: relative; display: flex; align-items: stretch;
+}
+
+/* ══ SLIDE BACKDROP ══ */
+.backdrop {
+  position: absolute; inset: 0;
+  background-size: cover; background-position: center;
+}
+/* Taxi Driver — deep red shifted to purple for scene cohesion */
+.backdrop-td {
+  background: linear-gradient(118deg,
+    #07050f 0%, #0e0520 15%, #1e0840 30%,
+    #3a0d60 45%, #6010a0 60%, #8c1ecc 75%,
+    #a030e0 88%, #b040f0 100%);
+}
+/* Whiplash — teal/blue to match other room light */
+.backdrop-wh {
+  background: linear-gradient(118deg,
+    #07050f 0%, #030d14 15%, #051a20 30%,
+    #082a30 45%, #0d4040 60%, #126055 75%,
+    #18887a 88%, #20a898 100%);
+}
+.backdrop::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(to right,
+    rgba(7,5,15,1.0)  0%,
+    rgba(7,5,15,0.93) 22%,
+    rgba(7,5,15,0.60) 48%,
+    rgba(7,5,15,0.12) 72%,
+    rgba(7,5,15,0.0)  100%);
+}
+
+/* ══ CONTENT PANEL ══ */
+.content {
+  position: relative; z-index: 2;
+  padding: 28px 36px 28px 42px;
+  width: 520px;
+  display: flex; flex-direction: column;
+  justify-content: center; gap: 0;
+}
+
+/* ══ POSTER ══ */
+.poster-col {
+  position: relative; z-index: 2;
+  margin-left: auto;
+  display: flex; align-items: center;
+  justify-content: flex-end;
+  padding-right: 24px;
+  margin-bottom: 32px;
+  flex-shrink: 0;
+}
+.poster-card {
+  width: 200px; height: 285px;
+  border-radius: 4px; overflow: hidden;
+  border: 1px solid rgba(140,60,255,0.30);
+  box-shadow:
+    0 0 0 1px rgba(30,180,160,0.12),
+    0 20px 60px rgba(0,0,0,0.80),
+    0 0 30px rgba(120,40,200,0.20);
+  position: relative;
+}
+.poster-card::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(to bottom, transparent 60%, rgba(7,5,15,0.5) 100%);
+}
+.poster-card img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+}
+
+/* No poster fallback */
+.poster-fallback {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Courier New', monospace;
+  font-size: 11px; letter-spacing: 0.2em;
+  text-transform: uppercase; color: rgba(160,110,255,0.4);
+}
+
+/* ══ TEXT ══ */
+.genre-row {
+  display: flex; gap: 5px; margin-bottom: 10px; flex-wrap: wrap;
+}
+.genre-tag {
+  font-size: 7.5px; letter-spacing: 0.20em;
+  text-transform: uppercase;
+  color: rgba(160,110,255,0.65);
+  border: 0.5px solid rgba(140,60,255,0.30);
+  padding: 2px 7px; border-radius: 1px;
+  background: rgba(120,40,200,0.08);
+}
+
+.film-title {
+  font-family: 'Courier New', monospace;
+  font-size: 34px; font-weight: 700;
+  letter-spacing: -0.01em; line-height: 1.05;
+  margin-bottom: 8px;
+}
+.film-title-td {
+  color: #e8d0ff;
+  text-shadow: 0 0 30px rgba(160,80,255,0.50), 0 0 8px rgba(160,80,255,0.25);
+}
+.film-title-wh {
+  color: #c0f0e8;
+  text-shadow: 0 0 30px rgba(30,180,160,0.55), 0 0 8px rgba(30,180,160,0.28);
+}
+
+.meta-row {
+  display: flex; align-items: center;
+  gap: 8px; margin-bottom: 12px; flex-wrap: wrap;
+}
+.meta-year  { font-size: 11px; font-weight: 700; color: #46d369; letter-spacing: 0.05em; }
+.meta-dot   { font-size: 9px; color: rgba(255,255,255,0.20); }
+.meta-info  { font-size: 10px; color: rgba(200,180,240,0.45); letter-spacing: 0.06em; }
+.match-badge {
+  font-size: 9px; font-weight: 700; color: #46d369;
+  border: 1px solid rgba(70,211,105,0.45);
+  padding: 1px 5px; border-radius: 1px; letter-spacing: 0.06em;
+  background: rgba(70,211,105,0.08);
+}
+
+.synopsis {
+  font-size: 11px; line-height: 1.70;
+  color: rgba(210,195,235,0.65);
+  margin-bottom: 16px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 0.01em;
+}
+
+/* ══ NEON DIVIDER ══ */
+.neon-divider {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 14px;
+}
+.neon-divider .dl { height: 0.5px; flex: 1; }
+.neon-divider .dl.p { background: linear-gradient(to right, rgba(140,60,255,0.4), transparent); }
+.neon-divider .dl.t { background: linear-gradient(to left,  rgba(30,180,160,0.35), transparent); }
+.neon-divider .pip {
+  width: 3px; height: 3px; border-radius: 50%;
+  background: rgba(160,110,255,0.6);
+  box-shadow: 0 0 6px rgba(140,60,255,0.6);
+  flex-shrink: 0;
+}
+
+/* ══ BUTTONS ══ */
+.btn-row { display: flex; gap: 8px; }
+
+.btn-play {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: rgba(160,80,255,0.15);
+  color: rgba(220,190,255,0.95);
+  border: 0.5px solid rgba(160,80,255,0.50);
+  font-family: 'Courier New', monospace;
+  font-size: 9px; font-weight: 700;
+  letter-spacing: 0.28em; text-transform: uppercase;
+  padding: 7px 18px; border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.18s;
+  box-shadow: 0 0 0 rgba(120,40,200,0);
+}
+.btn-play:hover {
+  background: rgba(160,80,255,0.30);
+  border-color: rgba(200,130,255,0.85);
+  color: #fff;
+  box-shadow: 0 0 16px rgba(120,40,200,0.35), inset 0 0 10px rgba(120,40,200,0.12);
+}
+.btn-play svg { width: 12px; height: 12px; fill: rgba(220,190,255,0.95); flex-shrink: 0; }
+
+.btn-more {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: rgba(30,180,160,0.10);
+  color: rgba(140,220,210,0.80);
+  border: 0.5px solid rgba(30,180,160,0.35);
+  font-family: 'Courier New', monospace;
+  font-size: 9px; font-weight: 700;
+  letter-spacing: 0.28em; text-transform: uppercase;
+  padding: 7px 18px; border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+.btn-more:hover {
+  background: rgba(30,180,160,0.22);
+  border-color: rgba(40,220,200,0.75);
+  color: rgba(180,240,230,1);
+  box-shadow: 0 0 14px rgba(30,180,160,0.28);
+}
+.btn-more svg { width: 12px; height: 12px; fill: rgba(140,220,210,0.80); flex-shrink: 0; }
+
+/* ══ NAV BUTTONS ══ */
+.nav-btn {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  z-index: 10; width: 30px; height: 30px;
+  border-radius: 50%;
+  border: 0.5px solid rgba(140,60,255,0.35);
+  background: rgba(8,4,20,0.70);
+  color: rgba(180,130,255,0.80);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.18s; font-size: 14px; line-height: 1;
+  backdrop-filter: blur(4px);
+}
+.nav-btn:hover {
+  background: rgba(120,40,200,0.28);
+  border-color: rgba(180,100,255,0.75);
+  color: rgba(220,180,255,1);
+  box-shadow: 0 0 12px rgba(120,40,200,0.35);
+}
+.nav-prev { left: 26px; }
+.nav-next { right: 26px; }
+
+/* ══ DOTS ══ */
+.dots {
+  position: absolute; bottom: 22px; left: 50%; transform: translateX(-50%);
+  z-index: 10; display: flex; gap: 5px;
+}
+.dot {
+  width: 20px; height: 2.5px; border-radius: 1.5px;
+  background: rgba(160,110,255,0.18); cursor: pointer;
+  transition: all 0.22s;
+}
+.dot.active { background: rgba(160,80,255,0.85); width: 30px; box-shadow: 0 0 8px rgba(140,60,255,0.6); }
+
+/* ══ POPUP ══ */
 .overlay {
-  display: none;
-  position: absolute;
-  inset: 0;
-  background: rgba(0,0,0,0.88);
-  z-index: 20;
-  align-items: center;
-  justify-content: center;
-  backdrop-filter: blur(6px);
+  display: none; position: absolute; inset: 0;
+  background: rgba(4,2,14,0.88);
+  z-index: 100;
+  align-items: center; justify-content: center;
+  backdrop-filter: blur(8px);
 }
 .overlay.open { display: flex; }
 .popup {
-  background: #1f1f1f;
-  border: 0.5px solid rgba(255,255,255,0.12);
-  border-radius: 8px;
-  padding: 28px;
-  width: 380px;
+  background: #0d0920;
+  border: 0.5px solid rgba(140,60,255,0.28);
+  border-radius: 4px;
+  padding: 24px; width: 360px;
   position: relative;
+  box-shadow: 0 0 40px rgba(120,40,200,0.20), 0 0 0 1px rgba(30,180,160,0.08);
 }
+/* popup gate corners */
+.popup::before, .popup::after {
+  content: ''; position: absolute; width: 10px; height: 10px;
+}
+.popup::before { top: -1px; left: -1px; border-top: 1px solid rgba(140,60,255,0.6); border-left: 1px solid rgba(140,60,255,0.6); }
+.popup::after  { bottom: -1px; right: -1px; border-bottom: 1px solid rgba(30,180,160,0.55); border-right: 1px solid rgba(30,180,160,0.55); }
+
 .popup-close {
-  position: absolute;
-  top: 12px; right: 14px;
+  position: absolute; top: 10px; right: 12px;
   background: none; border: none;
-  color: rgba(255,255,255,0.4);
-  font-size: 20px;
-  cursor: pointer;
-  line-height: 1;
-  transition: color 0.15s;
+  color: rgba(160,110,255,0.40);
+  font-size: 16px; cursor: pointer; line-height: 1;
+  transition: color 0.15s; font-family: 'Courier New', monospace;
 }
-.popup-close:hover { color: #fff; }
+.popup-close:hover { color: rgba(210,170,255,1); }
+
 .popup-label {
-  font-size: 10px;
-  letter-spacing: 0.16em;
+  font-size: 7px; letter-spacing: 0.30em;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.3);
+  color: rgba(30,180,160,0.50);
   margin-bottom: 4px;
 }
 .popup-movie-name {
-  font-size: 20px;
-  font-weight: 800;
-  color: #fff;
-  margin-bottom: 14px;
-  letter-spacing: -0.02em;
+  font-family: 'Courier New', monospace;
+  font-size: 18px; font-weight: 700;
+  color: rgba(220,200,255,0.95);
+  margin-bottom: 12px;
+  text-shadow: 0 0 20px rgba(160,90,255,0.35);
 }
 .popup-divider {
-  height: 1px;
-  background: rgba(255,255,255,0.1);
-  margin-bottom: 14px;
+  height: 0.5px;
+  background: linear-gradient(to right, rgba(140,60,255,0.35), rgba(30,180,160,0.28), transparent);
+  margin-bottom: 12px;
 }
 .popup-text {
-  font-size: 12.5px;
-  line-height: 1.7;
-  color: rgba(255,255,255,0.68);
+  font-family: 'Courier New', monospace;
+  font-size: 11px; line-height: 1.72;
+  color: rgba(200,185,230,0.65);
+  letter-spacing: 0.01em;
 }
 .popup-text p { margin-bottom: 10px; }
 .popup-text p:last-child { margin-bottom: 0; }
@@ -369,30 +388,42 @@ html, body {
 </head>
 <body>
 
-<!-- SVG filter for chromatic aberration -->
-<svg width="0" height="0" style="position:absolute">
-  <defs>
-    <filter id="ca-filter" x="-2%" y="-2%" width="104%" height="104%" color-interpolation-filters="sRGB">
-      <!-- shift R channel left, B channel right -->
-      <feColorMatrix type="matrix" values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="r"/>
-      <feOffset in="r" dx="-1.4" dy="0" result="r-shift"/>
-      <feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0" result="g"/>
-      <feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="b"/>
-      <feOffset in="b" dx="1.4" dy="0" result="b-shift"/>
-      <feBlend in="r-shift" in2="g" mode="screen" result="rg"/>
-      <feBlend in="rg" in2="b-shift" mode="screen"/>
-    </filter>
-  </defs>
-</svg>
+<!-- Scene ambient -->
+<div class="scene-bg"></div>
 
-<!-- Cinematic overlays -->
-<canvas id="bloom-canvas"></canvas>
+<!-- Overlays -->
 <canvas id="grain-canvas"></canvas>
 <div id="vignette"></div>
 <div id="scanlines"></div>
 
-<div class="wrap">
+<!-- Sprockets -->
+<div class="sprocket left">
+  <div class="hole"></div><div class="hole"></div><div class="hole"></div>
+  <div class="hole"></div><div class="hole"></div><div class="hole"></div>
+  <div class="hole"></div><div class="hole"></div>
+</div>
+<div class="sprocket right">
+  <div class="hole"></div><div class="hole"></div><div class="hole"></div>
+  <div class="hole"></div><div class="hole"></div><div class="hole"></div>
+  <div class="hole"></div><div class="hole"></div>
+</div>
 
+<!-- Data strips -->
+<div class="strip top">
+  <span>0001 ▪ 0002 ▪ 0003 ▪ 0004 ▪ 0005 ▪ 0006 ▪ 0007 ▪ 0008 ▪ 0009 ▪ 0010 ▪ 0011 ▪ 0012 ▪ 0013 ▪ 0014 ▪ 0015 ▪ 0016</span>
+</div>
+<div class="strip bottom">
+  <span>35mm ▪ KODAK VISION3 ▪ EI 500T ▪ TUNGSTEN ▪ TC 01:02:34:18 ▪ SCENE 47A ▪ TAKE 3 ▪ DEVELOP BEFORE 2025.12</span>
+</div>
+
+<!-- Gate corners -->
+<div class="gate tl"></div>
+<div class="gate tr"></div>
+<div class="gate bl"></div>
+<div class="gate br"></div>
+
+<!-- Main wrap -->
+<div class="wrap">
   <div class="slides-track" id="track">
 
     <!-- SLIDE 1: Taxi Driver -->
@@ -404,9 +435,7 @@ html, body {
           <span class="genre-tag">Drama</span>
           <span class="genre-tag">Neo-Noir</span>
         </div>
-        <div class="title-block">
-          <div class="film-title film-title-td">Taxi Driver</div>
-        </div>
+        <div class="film-title film-title-td">Taxi Driver</div>
         <div class="meta-row">
           <span class="meta-year">1976</span>
           <span class="meta-dot">•</span>
@@ -415,21 +444,23 @@ html, body {
           <span class="meta-info">Scorsese · De Niro</span>
           <span class="match-badge">97%</span>
         </div>
-        <p class="synopsis">Travis Bickle is a sleepless Vietnam vet drifting through New York's nocturnal underbelly behind a cab's wheel. The city festers around him — pimps, junkies, violence — and Travis, isolated and unraveling, becomes convinced he must do something.</p>
+        <p class="synopsis">Travis Bickle is a sleepless Vietnam vet drifting through New York's nocturnal underbelly. The city festers around him and Travis, isolated and unraveling, becomes convinced he must do something.</p>
+        <div class="neon-divider">
+          <div class="dl p"></div><div class="pip"></div><div class="dl t"></div>
+        </div>
         <div class="btn-row">
           <button class="btn-play">
-            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-            Play
+            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>Play
           </button>
           <button class="btn-more" onclick="openPopup('td')">
-            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
-            My Thoughts
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>My Thoughts
           </button>
         </div>
       </div>
       <div class="poster-col">
         <div class="poster-card">
-          <img src="/images/taxidriver.jpeg" alt="Taxi Driver poster" />
+          <img src="/images/taxidriver.jpeg" alt="Taxi Driver"
+               onerror="this.style.display='none';this.parentNode.innerHTML='<div class=\'poster-fallback\'>Taxi<br>Driver</div>'" />
         </div>
       </div>
     </div>
@@ -443,9 +474,7 @@ html, body {
           <span class="genre-tag">Music</span>
           <span class="genre-tag">Psychological</span>
         </div>
-        <div class="title-block">
-          <div class="film-title film-title-wh">Whiplash</div>
-        </div>
+        <div class="film-title film-title-wh">Whiplash</div>
         <div class="meta-row">
           <span class="meta-year">2014</span>
           <span class="meta-dot">•</span>
@@ -454,28 +483,30 @@ html, body {
           <span class="meta-info">Chazelle · Teller · Simmons</span>
           <span class="match-badge">98%</span>
         </div>
-        <p class="synopsis">Andrew Neiman arrives at a conservatory consumed by a single ambition — to be the next Buddy Rich. What he finds is Fletcher, a conductor who believes the two most harmful words are "good job." A pressure cooker of jazz and psychological warfare.</p>
+        <p class="synopsis">Andrew Neiman arrives at a conservatory consumed by one ambition — to be the next Buddy Rich. What he finds is Fletcher, a conductor who believes the two most harmful words are "good job."</p>
+        <div class="neon-divider">
+          <div class="dl p"></div><div class="pip"></div><div class="dl t"></div>
+        </div>
         <div class="btn-row">
           <button class="btn-play">
-            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-            Play
+            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>Play
           </button>
           <button class="btn-more" onclick="openPopup('wh')">
-            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
-            My Thoughts
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>My Thoughts
           </button>
         </div>
       </div>
       <div class="poster-col">
         <div class="poster-card">
-          <img src="/images/whiplash.jpeg" alt="Whiplash poster" />
+          <img src="/images/whiplash.jpeg" alt="Whiplash"
+               onerror="this.style.display='none';this.parentNode.innerHTML='<div class=\'poster-fallback\'>Whip<br>lash</div>'" />
         </div>
       </div>
     </div>
 
-  </div>
+  </div><!-- /track -->
 
-  <!-- Nav arrows -->
+  <!-- Nav -->
   <button class="nav-btn nav-prev" onclick="move(-1)">&#8592;</button>
   <button class="nav-btn nav-next" onclick="move(1)">&#8594;</button>
 
@@ -485,10 +516,10 @@ html, body {
     <div class="dot" onclick="goto(1)"></div>
   </div>
 
-  <!-- Popup overlay -->
+  <!-- Popup -->
   <div class="overlay" id="overlay" onclick="closeOutside(event)">
     <div class="popup" id="popup">
-      <button class="popup-close" onclick="closePopup()">&#10005;</button>
+      <button class="popup-close" onclick="closePopup()">✕</button>
       <div class="popup-label">My thoughts on</div>
       <div class="popup-movie-name" id="popup-name"></div>
       <div class="popup-divider"></div>
@@ -496,20 +527,22 @@ html, body {
     </div>
   </div>
 
-</div>
+</div><!-- /wrap -->
 
 <script>
 var cur = 0;
+
 var thoughts = {
   td: {
     name: 'Taxi Driver',
-    html: '<p>There\'s a reason this film never leaves you. Scorsese and Schrader created something at the intersection of American loneliness and American violence — and they didn\'t flinch. Travis isn\'t a hero or a villain, he\'s a mirror pointed at a society that produces men like him and then acts surprised.</p><p>De Niro\'s performance is method acting at its most unnerving. The quiet moments — Travis writing in his diary, watching trash from his cab — are where the film truly lives.</p><p>What haunts me most is the ending. The press treats a massacre as heroism. Scorsese doesn\'t editorialize. He just shows it, and lets the discomfort sit with you.</p>'
+    html: '<p>There\'s a reason this film never leaves you. Scorsese and Schrader created something at the intersection of American loneliness and American violence — and they didn\'t flinch. Travis isn\'t a hero or villain, he\'s a mirror.</p><p>De Niro\'s performance is method acting at its most unnerving. The quiet moments — Travis writing in his diary, watching trash from his cab — are where the film truly lives.</p><p>What haunts me most is the ending. The press treats a massacre as heroism. Scorsese doesn\'t editorialize. He just shows it.</p>'
   },
   wh: {
     name: 'Whiplash',
-    html: '<p>Chazelle made a film about music that feels like a thriller. Every drum solo has the tension of a heist. That\'s insane craft.</p><p>The film genuinely unsettled me because I found myself rooting for Fletcher\'s methods to work — and then catching myself doing it. That\'s the trap it lays. You feel triumph and horror simultaneously by the final solo.</p><p>J.K. Simmons deserved every award he won. Fletcher is terrifying not because he\'s cartoonish but because his logic partially makes sense. That\'s far scarier than a simple monster.</p>'
+    html: '<p>Chazelle made a film about music that feels like a thriller. Every drum solo has the tension of a heist. That\'s insane craft.</p><p>I found myself rooting for Fletcher\'s methods to work — and then catching myself doing it. You feel triumph and horror simultaneously by the final solo.</p><p>J.K. Simmons deserved every award he won. Fletcher is terrifying not because he\'s cartoonish but because his logic partially makes sense.</p>'
   }
 };
+
 function goto(idx) {
   cur = idx;
   document.getElementById('track').style.transform = 'translateX(-' + (idx * 880) + 'px)';
@@ -523,62 +556,30 @@ function openPopup(key) {
   document.getElementById('overlay').classList.add('open');
 }
 function closePopup() { document.getElementById('overlay').classList.remove('open'); }
+function closeOutside(e) { if (e.target === document.getElementById('overlay')) closePopup(); }
 
-
-/* ─── CINEMATIC POST-PROCESSING JS ─── */
+/* ── FILM GRAIN ── */
 (function() {
-  var W = 880, H = 420;
-
-  /* ── FILM GRAIN ── */
-  var grainCanvas = document.getElementById('grain-canvas');
-  grainCanvas.width = W; grainCanvas.height = H;
-  var gctx = grainCanvas.getContext('2d');
-
+  var W = 880, H = 360;
+  var gc = document.getElementById('grain-canvas');
+  gc.width = W; gc.height = H;
+  var gx = gc.getContext('2d');
+  var frame = 0;
   function drawGrain() {
-    var img = gctx.createImageData(W, H);
+    var img = gx.createImageData(W, H);
     var d = img.data;
     for (var i = 0; i < d.length; i += 4) {
       var v = (Math.random() * 255) | 0;
       d[i] = v; d[i+1] = v; d[i+2] = v; d[i+3] = 255;
     }
-    gctx.putImageData(img, 0, 0);
+    gx.putImageData(img, 0, 0);
   }
-  // Refresh grain every 2 frames for organic film feel
-  var grainFrame = 0;
-  function grainLoop() {
-    grainFrame++;
-    if (grainFrame % 2 === 0) drawGrain();
-    requestAnimationFrame(grainLoop);
+  function loop() {
+    if (++frame % 2 === 0) drawGrain();
+    requestAnimationFrame(loop);
   }
-  drawGrain();
-  grainLoop();
-
-  /* ── BLOOM GLOW ── */
-  var bloomCanvas = document.getElementById('bloom-canvas');
-  bloomCanvas.width = W; bloomCanvas.height = H;
-  var bctx = bloomCanvas.getContext('2d');
-
-  function drawBloom() {
-    bctx.clearRect(0, 0, W, H);
-    // Radial glow from center-right where bright content lives
-    var g1 = bctx.createRadialGradient(W*0.62, H*0.5, 0, W*0.62, H*0.5, W*0.55);
-    g1.addColorStop(0,   'rgba(255,200,140,0.18)');
-    g1.addColorStop(0.4, 'rgba(255,160, 80,0.08)');
-    g1.addColorStop(1,   'rgba(0,0,0,0)');
-    bctx.fillStyle = g1;
-    bctx.fillRect(0, 0, W, H);
-
-    // Secondary glow from top of bright area
-    var g2 = bctx.createRadialGradient(W*0.5, 0, 0, W*0.5, 0, H*0.8);
-    g2.addColorStop(0,   'rgba(200,220,255,0.10)');
-    g2.addColorStop(1,   'rgba(0,0,0,0)');
-    bctx.fillStyle = g2;
-    bctx.fillRect(0, 0, W, H);
-  }
-  drawBloom();
+  drawGrain(); loop();
 })();
-
-function closeOutside(e) { if (e.target === document.getElementById('overlay')) closePopup(); }
 </script>
 </body>
 </html>

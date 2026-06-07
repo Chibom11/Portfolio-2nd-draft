@@ -71,6 +71,7 @@ function LandingPage() {
             style={{ background: '#000' }}
           >
             <Suspense fallback={null}>
+            
               <Experience onTrackSelect={handleTrackSelect} />
             </Suspense>
           </Canvas>

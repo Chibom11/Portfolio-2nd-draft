@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=880" />
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap');
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    width: 880px;
+    height: 360px;
+    overflow: hidden;
+    background: #07050f;
+    cursor: default;
+  }
+
+  /* ── Ambient BG ── */
+  .bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 70% 90% at 18% 65%, rgba(120,40,200,0.20) 0%, transparent 60%),
+      radial-gradient(ellipse 55% 65% at 82% 35%, rgba(30,180,160,0.13) 0%, transparent 58%),
+      radial-gradient(ellipse 100% 100% at 50% 50%, #0e0a1a 0%, #07050f 100%);
+    pointer-events: none;
+  }
+
+  /* ── Scanlines ── */
+  .scan {
+    position: absolute;
+    inset: 0;
+    z-index: 8;
+    pointer-events: none;
+    background-image: repeating-linear-gradient(
+      0deg,
+      rgba(0,0,0,0.08) 0px, rgba(0,0,0,0.08) 1px,
+      transparent 1px, transparent 3px
+    );
+  }
+
+  /* ── Sprockets ── */
+  .sprocket {
+    position: absolute;
+    top: 0; bottom: 0;
+    width: 20px;
+    background: #050410;
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+  }
+  .sprocket.left  { left: 0;  border-right: 0.5px solid rgba(120,40,220,0.2); }
+  .sprocket.right { right: 0; border-left:  0.5px solid rgba(120,40,220,0.2); }
+  .hole {
+    width: 7px; height: 11px;
+    border-radius: 2px;
+    background: #020108;
+    border: 0.5px solid rgba(140,60,255,0.15);
+  }
+
+  /* ── Data strips ── */
+  .strip {
+    position: absolute;
+    left: 20px; right: 20px;
+    height: 18px;
+    background: rgba(8,4,20,0.92);
+    z-index: 4;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    overflow: hidden;
+  }
+  .strip.top    { top: 0;    border-bottom: 0.5px solid rgba(120,40,220,0.22); }
+  .strip.bottom { bottom: 0; border-top:    0.5px solid rgba(30,180,160,0.2);  }
+  .strip span {
+    font-family: 'Courier New', monospace;
+    font-size: 7px;
+    letter-spacing: 0.14em;
+    white-space: nowrap;
+  }
+  .strip.top    span { color: rgba(160,100,255,0.22); }
+  .strip.bottom span { color: rgba(30,200,180,0.20);  }
+
+  /* ── Stage ── */
+  .stage {
+    position: absolute;
+    top: 18px; bottom: 18px;
+    left: 20px; right: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Vignette */
+  .vignette {
+    position: absolute; inset: 0;
+    pointer-events: none; z-index: 2;
+    background: radial-gradient(ellipse 78% 82% at 50% 50%, transparent 18%, rgba(4,2,14,0.58) 72%, rgba(4,2,14,0.95) 100%);
+  }
+
+  /* Neon accents */
+  .neon { position: absolute; left: 0; right: 0; height: 0.5px; pointer-events: none; z-index: 3; }
+  .neon.purple { top: 27%;    background: linear-gradient(to right, transparent 5%, rgba(140,60,255,0.10) 30%, rgba(160,80,255,0.20) 50%, rgba(140,60,255,0.10) 70%, transparent 95%); }
+  .neon.teal   { bottom: 27%; background: linear-gradient(to right, transparent 5%, rgba(30,180,160,0.08) 30%, rgba(40,210,190,0.16) 50%, rgba(30,180,160,0.08) 70%, transparent 95%); }
+
+  /* Scratches */
+  .scratch {
+    position: absolute; top: 0; bottom: 0;
+    width: 0.5px; pointer-events: none; z-index: 3;
+    background: linear-gradient(to bottom, transparent, rgba(160,100,255,0.06) 30%, rgba(160,100,255,0.10) 50%, rgba(160,100,255,0.04) 75%, transparent);
+  }
+
+  /* Gate corners */
+  .gate { position: absolute; width: 14px; height: 14px; z-index: 11; pointer-events: none; }
+  .gate.tl { top: 14px;    left: 14px;  border-top:    0.5px solid rgba(140,60,255,0.50); border-left:   0.5px solid rgba(140,60,255,0.50); }
+  .gate.tr { top: 14px;    right: 14px; border-top:    0.5px solid rgba(140,60,255,0.50); border-right:  0.5px solid rgba(140,60,255,0.50); }
+  .gate.bl { bottom: 14px; left: 14px;  border-bottom: 0.5px solid rgba(30,180,160,0.45); border-left:   0.5px solid rgba(30,180,160,0.45); }
+  .gate.br { bottom: 14px; right: 14px; border-bottom: 0.5px solid rgba(30,180,160,0.45); border-right:  0.5px solid rgba(30,180,160,0.45); }
+
+  /* ── Content ── */
+  .content {
+    position: relative; z-index: 5;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center;
+    padding: 0 90px; width: 100%;
+  }
+
+  .reel-label {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 18px;
+  }
+  .reel-label .line { height: 0.5px; width: 28px; }
+  .reel-label .line.p { background: rgba(140,60,255,0.38); }
+  .reel-label .line.t { background: rgba(30,180,160,0.38); }
+  .reel-label span {
+    font-family: 'Courier New', monospace;
+    font-size: 7.5px; letter-spacing: 0.42em;
+    text-transform: uppercase; color: rgba(160,110,255,0.50);
+  }
+
+  .deco-quote {
+    font-family: Georgia, serif;
+    font-size: 90px; line-height: 0.25;
+    color: rgba(140,60,255,0.07); font-style: italic;
+    align-self: flex-start; margin-left: -2px;
+    margin-bottom: 10px; user-select: none;
+    display: block;
+  }
+
+  .quote {
+    font-family: Georgia, serif;
+    font-size: 22px; line-height: 1.82;
+    font-weight: 400; font-style: italic;
+    color: rgba(218,208,238,0.82);
+    letter-spacing: 0.025em; margin: 0;
+  }
+  .quote strong {
+    font-style: normal; font-weight: 600;
+    color: rgba(255,255,255,0.97);
+    text-shadow: 0 0 24px rgba(160,90,255,0.60), 0 0 8px rgba(160,90,255,0.28);
+  }
+
+  .divider {
+    display: flex; align-items: center; gap: 8px;
+    margin: 18px 0 14px;
+  }
+  .divider .dl { height: 0.5px; width: 50px; }
+  .divider .dl.p { background: linear-gradient(to right,  transparent, rgba(140,60,255,0.42)); }
+  .divider .dl.t { background: linear-gradient(to left,   transparent, rgba(30,180,160,0.38)); }
+  .divider .pip {
+    width: 3px; height: 3px; border-radius: 50%;
+    background: rgba(160,110,255,0.55);
+    box-shadow: 0 0 7px rgba(140,60,255,0.55);
+  }
+
+  .attr {
+    font-family: 'Courier New', monospace;
+    font-size: 9px; letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: rgba(160,110,255,0.68);
+    text-shadow: 0 0 18px rgba(140,60,255,0.38);
+    margin-bottom: 22px;
+  }
+
+  .cta {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 28px;
+    background: rgba(120,40,200,0.08);
+    border: 0.5px solid rgba(140,60,255,0.36);
+    color: rgba(180,130,255,0.85);
+    font-family: 'Courier New', monospace;
+    font-size: 8.5px; letter-spacing: 0.38em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.22s;
+    user-select: none;
+  }
+  .cta:hover {
+    background: rgba(120,40,200,0.22);
+    border-color: rgba(160,90,255,0.72);
+    color: rgba(210,170,255,1);
+    box-shadow: 0 0 20px rgba(120,40,200,0.28), inset 0 0 14px rgba(120,40,200,0.10);
+    letter-spacing: 0.44em;
+  }
+  .play-tri {
+    width: 0; height: 0;
+    border-style: solid;
+    border-width: 4.5px 0 4.5px 8px;
+    border-color: transparent transparent transparent rgba(180,130,255,0.85);
+    flex-shrink: 0;
+    transition: border-color 0.22s;
+  }
+  .cta:hover .play-tri {
+    border-color: transparent transparent transparent rgba(210,170,255,1);
+  }
+</style>
+</head>
+<body>
+
+<div class="bg"></div>
+<div class="scan"></div>
+
+<!-- Sprockets -->
+<div class="sprocket left">
+  <div class="hole"></div><div class="hole"></div><div class="hole"></div>
+  <div class="hole"></div><div class="hole"></div><div class="hole"></div>
+  <div class="hole"></div><div class="hole"></div><div class="hole"></div>
+</div>
+<div class="sprocket right">
+  <div class="hole"></div><div class="hole"></div><div class="hole"></div>
+  <div class="hole"></div><div class="hole"></div><div class="hole"></div>
+  <div class="hole"></div><div class="hole"></div><div class="hole"></div>
+</div>
+
+<!-- Data strips -->
+<div class="strip top">
+  <span>0001 ▪ 0002 ▪ 0003 ▪ 0004 ▪ 0005 ▪ 0006 ▪ 0007 ▪ 0008 ▪ 0009 ▪ 0010 ▪ 0011 ▪ 0012 ▪ 0013 ▪ 0014 ▪ 0015 ▪ 0016 ▪ 0017 ▪ 0018 ▪ 0019 ▪ 0020</span>
+</div>
+<div class="strip bottom">
+  <span>35mm ▪ KODAK VISION3 ▪ EI 500T ▪ SCENE 47A ▪ TAKE 3 ▪ TC 01:02:34:18 ▪ TUNGSTEN ▪ DEVELOP BEFORE 2025.12 ▪ EXPOSED</span>
+</div>
+
+<!-- Stage -->
+<div class="stage">
+  <div class="vignette"></div>
+  <div class="neon purple"></div>
+  <div class="neon teal"></div>
+  <div class="scratch" style="left:37%"></div>
+  <div class="scratch" style="left:63%; opacity:0.45"></div>
+
+  <!-- Gate corners -->
+  <div class="gate tl"></div>
+  <div class="gate tr"></div>
+  <div class="gate bl"></div>
+  <div class="gate br"></div>
+
+  <div class="content">
+    <div class="reel-label">
+      <div class="line p"></div>
+      <span>Reel I — Frame 0001</span>
+      <div class="line t"></div>
+    </div>
+
+    <span class="deco-quote">"</span>
+
+    <p class="quote">
+      Cinema is a matter of<br>
+      <strong>what's in the frame</strong><br>
+      and what's out.
+    </p>
+
+    <div class="divider">
+      <div class="dl p"></div>
+      <div class="pip"></div>
+      <div class="dl t"></div>
+    </div>
+
+    <div class="attr">— Martin Scorsese</div>
+
+    <div class="cta" onclick="window.parent.postMessage('enterTheatre', '*')">
+      <div class="play-tri"></div>
+      Enter Theatre
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

@@ -113,121 +113,255 @@ export function CinemaScreen({ proj, theatreView, setTheatreView, nodes, theatre
       />
 
       {/* ── Iframe overlay ── */}
-     {!theatreView && (
-  <Html
-    transform
-    occlude
-    position={[192.62, 205.8, 282]}
-    rotation={[0, -1.572, -0.001]}
-    scale={6.2}
-  >
-    <div style={wrapperStyle}>
-      <div style={scanlinesStyle} />
-      <div style={edgeBleedStyle} />
+{!theatreView && (
+<Html
+  transform
+  occlude={[theatreRef]}       // ← was just `occlude` (boolean)
+  position={[192.62, 205.8, 282]}
+  rotation={[0, -1.572, -0.001]}
+  scale={6.2}
+  zIndexRange={[0, 0]}  
+      
+>
+    {/* ── Root ── */}
+    <div style={{
+      width: '880px',
+      height: '360px',
+      position: 'relative',
+      overflow: 'hidden',
+      background: '#07050f',
+      fontFamily: "'Space Mono', 'Courier New', monospace",
+    }}>
 
-      {/* dark cinematic background */}
+      {/* ── Ambient BG — purple/teal split matching room lighting ── */}
       <div style={{
-        width: '880px', height: '360px',
-        background: 'radial-gradient(ellipse 160% 120% at 50% 50%, #1a1108 0%, #0d0a06 50%, #000 100%)',
+        position: 'absolute', inset: 0, pointerEvents: 'none',
+        background: `
+          radial-gradient(ellipse 70% 90% at 20% 60%, rgba(120,40,200,0.18) 0%, transparent 65%),
+          radial-gradient(ellipse 60% 70% at 80% 40%, rgba(30,180,160,0.12) 0%, transparent 60%),
+          radial-gradient(ellipse 100% 100% at 50% 50%, #0e0a1a 0%, #07050f 100%)
+        `,
+      }} />
+
+      {/* ── Scanlines ── */}
+      <div style={{
+        position: 'absolute', inset: 0, zIndex: 8, pointerEvents: 'none',
+        backgroundImage: 'repeating-linear-gradient(0deg, rgba(0,0,0,0.09) 0px, rgba(0,0,0,0.09) 1px, transparent 1px, transparent 3px)',
+      }} />
+
+      {/* ── Left sprocket ── */}
+      <div style={{
+        position: 'absolute', left: 0, top: 0, bottom: 0, width: '20px',
+        background: '#050410', zIndex: 5,
+        borderRight: '0.5px solid rgba(120,40,220,0.2)',
+        display: 'flex', flexDirection: 'column',
+        justifyContent: 'space-evenly', alignItems: 'center',
+      }}>
+        {[...Array(9)].map((_, i) => (
+          <div key={i} style={{
+            width: '7px', height: '11px', borderRadius: '2px',
+            background: '#020108', border: '0.5px solid rgba(140,60,255,0.15)',
+          }} />
+        ))}
+      </div>
+
+      {/* ── Right sprocket ── */}
+      <div style={{
+        position: 'absolute', right: 0, top: 0, bottom: 0, width: '20px',
+        background: '#050410', zIndex: 5,
+        borderLeft: '0.5px solid rgba(120,40,220,0.2)',
+        display: 'flex', flexDirection: 'column',
+        justifyContent: 'space-evenly', alignItems: 'center',
+      }}>
+        {[...Array(9)].map((_, i) => (
+          <div key={i} style={{
+            width: '7px', height: '11px', borderRadius: '2px',
+            background: '#020108', border: '0.5px solid rgba(140,60,255,0.15)',
+          }} />
+        ))}
+      </div>
+
+      {/* ── Top data strip ── */}
+      <div style={{
+        position: 'absolute', top: 0, left: '20px', right: '20px',
+        height: '18px', background: 'rgba(8,4,20,0.9)', zIndex: 4,
+        borderBottom: '0.5px solid rgba(120,40,220,0.25)',
+        display: 'flex', alignItems: 'center', padding: '0 20px', overflow: 'hidden',
+      }}>
+        <span style={{ fontFamily: "'Courier New', monospace", fontSize: '7px', color: 'rgba(160,100,255,0.22)', letterSpacing: '0.14em', whiteSpace: 'nowrap' }}>
+          0001 ▪ 0002 ▪ 0003 ▪ 0004 ▪ 0005 ▪ 0006 ▪ 0007 ▪ 0008 ▪ 0009 ▪ 0010 ▪ 0011 ▪ 0012 ▪ 0013 ▪ 0014 ▪ 0015 ▪ 0016 ▪ 0017 ▪ 0018 ▪ 0019 ▪ 0020
+        </span>
+      </div>
+
+      {/* ── Bottom data strip ── */}
+      <div style={{
+        position: 'absolute', bottom: 0, left: '20px', right: '20px',
+        height: '18px', background: 'rgba(8,4,20,0.9)', zIndex: 4,
+        borderTop: '0.5px solid rgba(30,180,160,0.2)',
+        display: 'flex', alignItems: 'center', padding: '0 20px', overflow: 'hidden',
+      }}>
+        <span style={{ fontFamily: "'Courier New', monospace", fontSize: '7px', color: 'rgba(30,200,180,0.2)', letterSpacing: '0.14em', whiteSpace: 'nowrap' }}>
+          35mm ▪ KODAK VISION3 ▪ EI 500T ▪ SCENE 47A ▪ TAKE 3 ▪ TC 01:02:34:18 ▪ TUNGSTEN ▪ DEVELOP BEFORE 2025.12 ▪ EXPOSED
+        </span>
+      </div>
+
+      {/* ── Stage (main content area) ── */}
+      <div style={{
+        position: 'absolute', top: '18px', bottom: '18px', left: '20px', right: '20px',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        position: 'relative', overflow: 'hidden', borderRadius: '4px',
-        fontFamily: 'Georgia, serif',
       }}>
 
-        {/* film edge burns */}
-        <div style={{ position:'absolute', inset:0, pointerEvents:'none',
-          background: 'linear-gradient(to right, rgba(255,130,10,0.09) 0%, transparent 5%, transparent 95%, rgba(255,130,10,0.07) 100%)'
+        {/* Vignette */}
+        <div style={{
+          position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 2,
+          background: 'radial-gradient(ellipse 78% 82% at 50% 50%, transparent 18%, rgba(4,2,14,0.6) 72%, rgba(4,2,14,0.96) 100%)',
         }} />
 
-        {/* sprocket left */}
-        <div style={{ position:'absolute', left:0, top:0, bottom:0, width:'18px',
-          background:'#080808', borderRight:'1px solid #161616',
-          display:'flex', flexDirection:'column', justifyContent:'space-evenly', alignItems:'center'
-        }}>
-          {[...Array(8)].map((_,i) => (
-            <div key={i} style={{ width:'7px', height:'10px', borderRadius:'2px', background:'#000', border:'0.5px solid #222' }} />
-          ))}
-        </div>
-
-        {/* sprocket right */}
-        <div style={{ position:'absolute', right:0, top:0, bottom:0, width:'18px',
-          background:'#080808', borderLeft:'1px solid #161616',
-          display:'flex', flexDirection:'column', justifyContent:'space-evenly', alignItems:'center'
-        }}>
-          {[...Array(8)].map((_,i) => (
-            <div key={i} style={{ width:'7px', height:'10px', borderRadius:'2px', background:'#000', border:'0.5px solid #222' }} />
-          ))}
-        </div>
-
-        {/* vignette */}
-        <div style={{ position:'absolute', inset:0, pointerEvents:'none',
-          background:'radial-gradient(ellipse 85% 85% at 50% 50%, transparent 25%, rgba(0,0,0,0.65) 70%, rgba(0,0,0,0.97) 100%)'
+        {/* Neon horizontal accent — purple */}
+        <div style={{
+          position: 'absolute', top: '28%', left: 0, right: 0, height: '0.5px',
+          pointerEvents: 'none', zIndex: 3,
+          background: 'linear-gradient(to right, transparent 5%, rgba(140,60,255,0.12) 30%, rgba(160,80,255,0.22) 50%, rgba(140,60,255,0.12) 70%, transparent 95%)',
         }} />
 
-        {/* content */}
-        <div style={{ position:'relative', zIndex:10, display:'flex', flexDirection:'column',
-          alignItems:'center', textAlign:'center', padding:'0 80px'
+        {/* Neon horizontal accent — teal */}
+        <div style={{
+          position: 'absolute', bottom: '28%', left: 0, right: 0, height: '0.5px',
+          pointerEvents: 'none', zIndex: 3,
+          background: 'linear-gradient(to right, transparent 5%, rgba(30,180,160,0.10) 30%, rgba(40,210,190,0.18) 50%, rgba(30,180,160,0.10) 70%, transparent 95%)',
+        }} />
+
+        {/* Vertical scratch left */}
+        <div style={{
+          position: 'absolute', top: 0, bottom: 0, left: '37%', width: '0.5px',
+          pointerEvents: 'none', zIndex: 3,
+          background: 'linear-gradient(to bottom, transparent, rgba(160,100,255,0.05) 30%, rgba(160,100,255,0.09) 50%, rgba(160,100,255,0.04) 75%, transparent)',
+        }} />
+
+        {/* Vertical scratch right */}
+        <div style={{
+          position: 'absolute', top: 0, bottom: 0, left: '63%', width: '0.5px',
+          pointerEvents: 'none', zIndex: 3, opacity: 0.5,
+          background: 'linear-gradient(to bottom, transparent, rgba(160,100,255,0.05) 30%, rgba(160,100,255,0.09) 50%, rgba(160,100,255,0.04) 75%, transparent)',
+        }} />
+
+        {/* ── Gate corner marks — purple top, teal bottom ── */}
+        {/* TL */}
+        <div style={{ position: 'absolute', top: '14px', left: '14px', width: '14px', height: '14px', borderTop: '0.5px solid rgba(140,60,255,0.45)', borderLeft: '0.5px solid rgba(140,60,255,0.45)', zIndex: 4, pointerEvents: 'none' }} />
+        {/* TR */}
+        <div style={{ position: 'absolute', top: '14px', right: '14px', width: '14px', height: '14px', borderTop: '0.5px solid rgba(140,60,255,0.45)', borderRight: '0.5px solid rgba(140,60,255,0.45)', zIndex: 4, pointerEvents: 'none' }} />
+        {/* BL */}
+        <div style={{ position: 'absolute', bottom: '14px', left: '14px', width: '14px', height: '14px', borderBottom: '0.5px solid rgba(30,180,160,0.4)', borderLeft: '0.5px solid rgba(30,180,160,0.4)', zIndex: 4, pointerEvents: 'none' }} />
+        {/* BR */}
+        <div style={{ position: 'absolute', bottom: '14px', right: '14px', width: '14px', height: '14px', borderBottom: '0.5px solid rgba(30,180,160,0.4)', borderRight: '0.5px solid rgba(30,180,160,0.4)', zIndex: 4, pointerEvents: 'none' }} />
+
+        {/* ── Content ── */}
+        <div style={{
+          position: 'relative', zIndex: 5,
+          display: 'flex', flexDirection: 'column',
+          alignItems: 'center', justifyContent: 'center',
+          textAlign: 'center',
+          padding: '0 90px',
+          width: '100%',
         }}>
-          <div style={{ fontFamily:'Courier New, monospace', fontSize:'9px', letterSpacing:'0.3em',
-            textTransform:'uppercase', color:'rgba(255,210,100,0.28)', marginBottom:'22px',
-            display:'flex', alignItems:'center', gap:'10px'
-          }}>
-            <span style={{ display:'block', height:'0.5px', width:'24px', background:'rgba(255,210,100,0.2)' }} />
-            Frame 0001
-            <span style={{ display:'block', height:'0.5px', width:'24px', background:'rgba(255,210,100,0.2)' }} />
+
+          {/* Reel label */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
+            <div style={{ height: '0.5px', width: '28px', background: 'rgba(140,60,255,0.4)' }} />
+            <span style={{ fontFamily: "'Courier New', monospace", fontSize: '7.5px', letterSpacing: '0.42em', textTransform: 'uppercase', color: 'rgba(160,110,255,0.55)' }}>
+              Reel I — Frame 0001
+            </span>
+            <div style={{ height: '0.5px', width: '28px', background: 'rgba(30,180,160,0.4)' }} />
           </div>
 
-          <span style={{ fontFamily:'Georgia, serif', fontSize:'64px', lineHeight:'0.55',
-            color:'rgba(255,210,100,0.14)', fontStyle:'italic', marginBottom:'6px', display:'block'
+          {/* Decorative quote mark */}
+          <span style={{
+            fontFamily: 'Georgia, serif', fontSize: '96px', lineHeight: '0.28',
+            color: 'rgba(140,60,255,0.08)', fontStyle: 'italic',
+            alignSelf: 'flex-start', marginLeft: '-4px',
+            marginBottom: '8px', userSelect: 'none', display: 'block',
           }}>"</span>
 
-          <p style={{ fontFamily:'Georgia, serif', fontSize:'24px', lineHeight:'1.75',
-            fontWeight:300, fontStyle:'italic', color:'rgba(245,235,200,0.9)',
-            letterSpacing:'0.03em', margin:0
+          {/* Quote text */}
+          <p style={{
+            fontFamily: 'Georgia, serif', fontSize: '22px', lineHeight: '1.82',
+            fontWeight: 400, fontStyle: 'italic',
+            color: 'rgba(220,210,240,0.82)',
+            letterSpacing: '0.025em', margin: 0,
           }}>
             Cinema is a matter of<br />
-            <span style={{ fontStyle:'normal', fontWeight:600, color:'rgba(255,215,110,0.95)' }}>
+            <span style={{
+              fontStyle: 'normal', fontWeight: 600,
+              color: 'rgba(255,255,255,0.97)',
+              textShadow: '0 0 22px rgba(160,90,255,0.55), 0 0 6px rgba(160,90,255,0.25)',
+            }}>
               what's in the frame
             </span><br />
             and what's out.
           </p>
 
-          <div style={{ height:'0.5px', width:'180px',
-            background:'linear-gradient(to right, transparent, rgba(255,210,100,0.4), transparent)',
-            margin:'18px auto'
-          }} />
+          {/* Ornament divider */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', margin: '18px 0 14px' }}>
+            <div style={{ height: '0.5px', width: '50px', background: 'linear-gradient(to right, transparent, rgba(140,60,255,0.45))' }} />
+            <div style={{ width: '3px', height: '3px', borderRadius: '50%', background: 'rgba(160,110,255,0.6)', boxShadow: '0 0 6px rgba(140,60,255,0.5)' }} />
+            <div style={{ height: '0.5px', width: '50px', background: 'linear-gradient(to left, transparent, rgba(30,180,160,0.4))' }} />
+          </div>
 
-          <div style={{ fontFamily:'Courier New, monospace', fontSize:'13px',
-            letterSpacing:'0.22em', textTransform:'uppercase', color:'rgba(255,210,100,0.85)',
-            textShadow:'0 0 12px rgba(255,200,80,0.6)', marginBottom:'24px'
+          {/* Attribution */}
+          <div style={{
+            fontFamily: "'Courier New', monospace", fontSize: '9px',
+            letterSpacing: '0.35em', textTransform: 'uppercase',
+            color: 'rgba(160,110,255,0.7)',
+            textShadow: '0 0 16px rgba(140,60,255,0.4)',
+            marginBottom: '22px',
           }}>
             — Martin Scorsese
           </div>
 
+          {/* CTA button */}
           <div
             onClick={() => setTheatreView(true)}
             style={{
-              cursor:'pointer', padding:'8px 24px',
-              border:'1px solid rgba(255,210,100,0.4)', borderRadius:'2px',
-              background:'rgba(255,200,80,0.06)', color:'rgba(255,210,100,0.8)',
-              fontFamily:'Courier New, monospace', fontSize:'10px',
-              letterSpacing:'0.3em', textTransform:'uppercase',
-              display:'flex', alignItems:'center', gap:'8px',
+              cursor: 'pointer',
+              display: 'flex', alignItems: 'center', gap: '10px',
+              padding: '9px 28px',
+              background: 'rgba(120,40,200,0.08)',
+              border: '0.5px solid rgba(140,60,255,0.38)',
+              color: 'rgba(180,130,255,0.85)',
+              fontFamily: "'Courier New', monospace",
+              fontSize: '8.5px', letterSpacing: '0.38em',
+              textTransform: 'uppercase',
+              position: 'relative',
+              transition: 'all 0.22s',
             }}
             onMouseEnter={e => {
-              e.currentTarget.style.background = 'rgba(255,200,80,0.15)'
-              e.currentTarget.style.color = 'rgba(255,220,120,1)'
-              e.currentTarget.style.borderColor = 'rgba(255,210,100,0.8)'
+              const el = e.currentTarget
+              el.style.background = 'rgba(120,40,200,0.20)'
+              el.style.borderColor = 'rgba(160,90,255,0.75)'
+              el.style.color = 'rgba(210,170,255,1)'
+              el.style.boxShadow = '0 0 18px rgba(120,40,200,0.25), inset 0 0 12px rgba(120,40,200,0.08)'
+              el.style.letterSpacing = '0.44em'
             }}
             onMouseLeave={e => {
-              e.currentTarget.style.background = 'rgba(255,200,80,0.06)'
-              e.currentTarget.style.color = 'rgba(255,210,100,0.8)'
-              e.currentTarget.style.borderColor = 'rgba(255,210,100,0.4)'
+              const el = e.currentTarget
+              el.style.background = 'rgba(120,40,200,0.08)'
+              el.style.borderColor = 'rgba(140,60,255,0.38)'
+              el.style.color = 'rgba(180,130,255,0.85)'
+              el.style.boxShadow = 'none'
+              el.style.letterSpacing = '0.38em'
             }}
           >
-            <span style={{ fontSize:'12px' }}>▶</span>
+            {/* play triangle */}
+            <div style={{
+              width: 0, height: 0,
+              borderStyle: 'solid',
+              borderWidth: '4.5px 0 4.5px 8px',
+              borderColor: 'transparent transparent transparent rgba(180,130,255,0.85)',
+              flexShrink: 0,
+            }} />
             Enter Theatre
           </div>
+
         </div>
       </div>
     </div>
@@ -241,56 +375,105 @@ export function CinemaScreen({ proj, theatreView, setTheatreView, nodes, theatre
     rotation={[0, -1.572, -0.001]}
     scale={6.2}
   >
-    <div style={wrapperStyle}>
-      <div style={scanlinesStyle} />
-      <div style={edgeBleedStyle} />
+    <div style={{
+      width: '880px',
+      height: '360px',
+      position: 'relative',
+      overflow: 'hidden',
+      borderRadius: '2px',
+    }}>
 
-      {/* close button */}
+      {/* ── Scanlines over iframe ── */}
+      <div style={{
+        position: 'absolute', inset: 0, zIndex: 10, pointerEvents: 'none',
+        backgroundImage: 'repeating-linear-gradient(0deg, rgba(0,0,0,0.07) 0px, rgba(0,0,0,0.07) 1px, transparent 1px, transparent 3px)',
+      }} />
+
+      {/* ── Purple/teal edge bleed matching room lighting ── */}
+      <div style={{
+        position: 'absolute', inset: '-8px', zIndex: -1, pointerEvents: 'none',
+        borderRadius: '8px',
+        background: 'radial-gradient(ellipse at center, rgba(120,40,200,0) 55%, rgba(120,40,200,0.18) 100%)',
+        filter: 'blur(14px)',
+      }} />
+
+      {/* ── Gate corner marks — purple top, teal bottom ── */}
+      {/* TL */}
+      <div style={{ position:'absolute', top:'8px', left:'8px', width:'14px', height:'14px', borderTop:'1px solid rgba(140,60,255,0.6)', borderLeft:'1px solid rgba(140,60,255,0.6)', zIndex:11, pointerEvents:'none' }} />
+      {/* TR */}
+      <div style={{ position:'absolute', top:'8px', right:'8px', width:'14px', height:'14px', borderTop:'1px solid rgba(140,60,255,0.6)', borderRight:'1px solid rgba(140,60,255,0.6)', zIndex:11, pointerEvents:'none' }} />
+      {/* BL */}
+      <div style={{ position:'absolute', bottom:'8px', left:'8px', width:'14px', height:'14px', borderBottom:'1px solid rgba(30,180,160,0.55)', borderLeft:'1px solid rgba(30,180,160,0.55)', zIndex:11, pointerEvents:'none' }} />
+      {/* BR */}
+      <div style={{ position:'absolute', bottom:'8px', right:'8px', width:'14px', height:'14px', borderBottom:'1px solid rgba(30,180,160,0.55)', borderRight:'1px solid rgba(30,180,160,0.55)', zIndex:11, pointerEvents:'none' }} />
+
+      {/* ── Exit button ── */}
       <div
         onClick={() => setTheatreView(false)}
         onMouseEnter={e => {
-          e.currentTarget.style.background = 'rgba(255,200,80,0.18)'
-          e.currentTarget.style.borderColor = 'rgba(255,210,100,0.9)'
-          e.currentTarget.style.color = 'rgba(255,230,130,1)'
-          e.currentTarget.style.letterSpacing = '0.35em'
+          const el = e.currentTarget
+          el.style.background = 'rgba(120,40,200,0.28)'
+          el.style.borderColor = 'rgba(160,90,255,0.85)'
+          el.style.color = 'rgba(210,170,255,1)'
+          el.style.boxShadow = '0 0 14px rgba(120,40,200,0.35), inset 0 0 8px rgba(120,40,200,0.12)'
+          el.style.letterSpacing = '0.42em'
         }}
         onMouseLeave={e => {
-          e.currentTarget.style.background = 'rgba(0,0,0,0.55)'
-          e.currentTarget.style.borderColor = 'rgba(255,210,100,0.3)'
-          e.currentTarget.style.color = 'rgba(255,210,100,0.6)'
-          e.currentTarget.style.letterSpacing = '0.28em'
+          const el = e.currentTarget
+          el.style.background = 'rgba(8,4,20,0.75)'
+          el.style.borderColor = 'rgba(140,60,255,0.32)'
+          el.style.color = 'rgba(160,110,255,0.65)'
+          el.style.boxShadow = 'none'
+          el.style.letterSpacing = '0.35em'
         }}
         style={{
           position: 'absolute',
-          top: '10px',
-          right: '0px',
+          top: '12px',
+          right: '12px',
           zIndex: 20,
           cursor: 'pointer',
-          padding: '4px 14px',
-          border: '1px solid rgba(255,210,100,0.3)',
-          borderRadius: '2px',
-          background: 'rgba(0,0,0,0.55)',
-          color: 'rgba(255,210,100,0.6)',
-          fontFamily: 'Courier New, monospace',
-          fontSize: '10px',
-          letterSpacing: '0.28em',
+          padding: '5px 14px',
+          border: '0.5px solid rgba(140,60,255,0.32)',
+          background: 'rgba(8,4,20,0.75)',
+          color: 'rgba(160,110,255,0.65)',
+          fontFamily: "'Courier New', monospace",
+          fontSize: '8px',
+          letterSpacing: '0.35em',
           textTransform: 'uppercase',
           display: 'flex',
           alignItems: 'center',
-          gap: '6px',
+          gap: '7px',
           transition: 'all 0.2s',
-          backdropFilter: 'blur(4px)',
+          backdropFilter: 'blur(6px)',
+          // corner ticks via outline trick — not possible inline, handled by gate divs above
         }}
       >
-        <span style={{ fontSize: '8px', opacity: 0.7 }}>✕</span>
+        {/* ✕ as a CSS border triangle-free approach */}
+        <span style={{
+          fontSize: '7px',
+          opacity: 0.75,
+          color: 'rgba(30,200,180,0.8)',
+          fontWeight: 700,
+          lineHeight: 1,
+        }}>✕</span>
         Exit
       </div>
 
+      {/* ── Iframe ── */}
       <iframe
         src="/projector_movie_carousel.html"
-        style={iframeStyle}
+        style={{
+          width: '880px',
+          height: '360px',
+          border: 'none',
+          display: 'block',
+          filter: 'contrast(1.04) saturate(1.08)',
+          borderRadius: '2px',
+          transform: 'rotateY(0.3deg) rotateX(-0.2deg)',
+        }}
         title="theatre"
       />
+
     </div>
   </Html>
 )}
