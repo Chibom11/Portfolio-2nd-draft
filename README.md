@@ -18,7 +18,7 @@ Portals that navigate You to my socials. You'll be pulled by their magnetic fiel
 
 <img width="268" height="150" alt="Untitled video 2025-10-21T070404 (2)" src="https://github.com/user-attachments/assets/20397ee9-478f-4ae1-8a8d-301271dc42ce" />
 
-Curated Ambient IDM playlist featuring the pioneers of IDM themselves. May conatin a few bugs which will be fixed later.
+Curated Ambient IDM playlist featuring the pioneers of IDM themselves. May contain a few bugs which will be fixed later.
 
 <img width="418" height="236" alt="Untitled video 2025-10-21T070404 (3)" src="https://github.com/user-attachments/assets/764575e1-5f89-41c8-ad4d-260515a5dd8e" />
 
