@@ -210,8 +210,8 @@ useEffect(()=>{console.log("Config003 controls",config003Controls)},[config003Co
 />
 
           {/* Pass the ref down */}
-          <Character ref={characterRb} playfall={playfall} setPlayFall={setPlayFall}/>
-        {/*  <Miles ref={characterRb} playfall={playfall} setPlayFall={setPlayFall}/>*/}
+          {/* <Character ref={characterRb} playfall={playfall} setPlayFall={setPlayFall}/> */}
+         <Miles ref={characterRb} playfall={playfall} setPlayFall={setPlayFall}/>
           {/* <Spiderman  ref={characterRb}/> */}
 
     
