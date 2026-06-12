@@ -17,6 +17,9 @@ const CHARS = [
     modelPath: "/model/mup.glb",
     modelScale: 0.8,       
     modelOffset: [0.6, -0.4, 0],
+    idleAnim: "happyidle",
+    modelRotation: [0, 0, 0]
+
   },
   {
     id: "character",
@@ -28,9 +31,11 @@ const CHARS = [
     desc: "Perfectly calibrated. A blank slate ready for anything.",
     accent: "#a855f7",
     accentSoft: "#c98bff",
-    modelPath: "/models/operative.glb",
-    modelScale: 1,
-    modelOffset: [0, 0, 0],
+    modelPath: "/model/untitled.glb",
+    modelScale: 0.9,       
+    modelOffset: [0, -0.9, 0],
+    idleAnim: "lay",
+    modelRotation: [0, -Math.PI / 2, 0]
   },
   {
     id: "spiderman",
@@ -42,9 +47,11 @@ const CHARS = [
     desc: "The original. Every reflex sharpened to a blade's edge.",
     accent: "#3ba7e0",
     accentSoft: "#6fc6ff",
-    modelPath: "/models/spiderman.glb",
-    modelScale: 1,
-    modelOffset: [0, 0, 0],
+    modelPath: "/model/spiderman.glb",
+    modelScale: 0.8,
+    modelOffset: [0, -0.6, 0],
+    idleAnim: "idle",
+    modelRotation: [0,0, 0]
   },
 ];
 
@@ -68,14 +75,16 @@ function CharacterModel({ char, entering }) {
   // }, [actions]);
 
   // Auto-fit after first render — scene is now in the DOM so bones are ready
+  // Miles
+
     useEffect(() => {
-    const clip = actions["happyidle"];
-    if (clip) {
-      clip.reset().fadeIn(0.3).play();
-      clip.setLoop(THREE.LoopRepeat, Infinity);
-    }
-    return () => { clip?.fadeOut(0.3); };
-  }, [actions]);
+  const clip = actions[char.idleAnim];
+  if (clip) {
+    clip.reset().fadeIn(0.3).play();
+    clip.setLoop(THREE.LoopRepeat, Infinity);
+  }
+  return () => { clip?.fadeOut(0.3); };
+}, [actions, char.idleAnim]);
   useEffect(() => {
     const group = groupRef.current;
     if (!group) return;
@@ -110,7 +119,9 @@ function CharacterModel({ char, entering }) {
       -minY      + char.modelOffset[1],
        char.modelOffset[2]
     );
-
+if (char.modelRotation) {
+  group.rotation.set(...char.modelRotation);
+}
     // Enable shadows on all meshes
     group.traverse((c) => {
       if (c.isMesh) { c.castShadow = true; c.receiveShadow = true; }
