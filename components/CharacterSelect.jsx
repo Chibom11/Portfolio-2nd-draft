@@ -34,8 +34,8 @@ const CHARS = [
     modelPath: "/model/untitled.glb",
     modelScale: 0.9,       
     modelOffset: [0, -0.9, 0],
-    idleAnim: "lay",
-    modelRotation: [0, -Math.PI / 2, 0]
+    idleAnim: "stand idle",
+    modelRotation: [0, 0, 0]
   },
   {
     id: "spiderman",
@@ -55,28 +55,14 @@ const CHARS = [
   },
 ];
 
-/* ─────────────────────────────────────────────
-   CharacterModel
-   - Does NOT clone the scene (safe for skinned meshes)
-   - Auto-fits the group to a ~2-unit tall bounding box
-     AFTER mount, when bones have computed their world matrices
-───────────────────────────────────────────── */
+
 function CharacterModel({ char, entering }) {
   
   const groupRef = useRef();
   const { scene, animations } = useGLTF(char.modelPath);
   const { actions } = useAnimations(animations, groupRef);
 
-  // Animation disabled — uncomment below to re-enable:
-  // useEffect(() => {
-  //   const first = Object.values(actions)[0];
-  //   if (first) first.reset().fadeIn(0.3).play();
-  //   return () => { Object.values(actions).forEach(a => a?.stop()); };
-  // }, [actions]);
-
-  // Auto-fit after first render — scene is now in the DOM so bones are ready
-  // Miles
-
+  
     useEffect(() => {
   const clip = actions[char.idleAnim];
   if (clip) {
@@ -85,6 +71,7 @@ function CharacterModel({ char, entering }) {
   }
   return () => { clip?.fadeOut(0.3); };
 }, [actions, char.idleAnim]);
+
   useEffect(() => {
     const group = groupRef.current;
     if (!group) return;
@@ -149,10 +136,24 @@ if (char.modelRotation) {
    Placeholder — shown while model loads
 ───────────────────────────────────────────── */
 function Placeholder({ accent }) {
-  const ref = useRef();
-  useFrame((_, delta) => {
-    
-  });
+  return (
+    <Html center>
+      <div
+        style={{
+          width: 48,
+          height: 48,
+          borderRadius: "50%",
+          border: `4px solid ${accent}33`,
+          borderTopColor: accent,
+          animation: "spin 0.9s linear infinite",
+        }}
+      />
+      <style>{`
+        @keyframes spin { to { transform: rotate(360deg); } }
+      `}</style>
+    </Html>
+  );
+}
   return (
     <group ref={ref} position={[0, 0, 0]}>
       <mesh position={[0, 0.9, 0]} castShadow>
@@ -165,7 +166,7 @@ function Placeholder({ accent }) {
       </mesh>
     </group>
   );
-}
+
 
 /* ─────────────────────────────────────────────
    Error boundary — shows placeholder if GLB fails
